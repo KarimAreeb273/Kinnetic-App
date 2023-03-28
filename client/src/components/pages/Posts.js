@@ -10,7 +10,7 @@ function Posts() {
   useEffect(() => {
     fetch("/posts")
       .then((r) => r.json())
-      .then(setPosts);
+      .then(posts => setPosts(posts))
   }, []);
 
   return (

@@ -5,7 +5,7 @@ import { Errors, Input, Label } from "../styles";
 import { Form, Button } from "semantic-ui-react";
 
 
-function NewPost({ user }) {
+function NewPost() {
     const [title, setTitle] = useState("");
     const [errors, setErrors] = useState([]);
     const [isLoading, setIsLoading] = useState(false);

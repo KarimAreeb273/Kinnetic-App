@@ -13,6 +13,7 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
      
     posts = db.relationship('Post', backref='user')
+    profile = db.relationship('Profile', backref='user')
 
     @hybrid_property
     def password_hash(self):
@@ -41,3 +42,16 @@ class Post(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Post {self.id}: {self.title}>'
+
+class Profile(db.Model, SerializerMixin):
+    __tablename__ = 'profile'
+
+    id = db.Column(db.Integer, primary_key=True)
+    image_url = db.Column(db.String, nullable=False)
+    bio = db.Column(db.String, nullable=False)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return f'<Post {self.id}: {self.bio}>'
+

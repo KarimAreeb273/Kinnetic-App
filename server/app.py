@@ -103,14 +103,11 @@ class Logout(Resource):
 class Posts(Resource):
 
     def get(self):
+        posts = Post.query.all()
+        post_dict = [post.to_dict() for post in posts]
+        response = make_response(post_dict, 200)
+        return response
 
-        if session.get('user_id'):
-
-            user = User.query.filter(User.id == session['user_id']).first()
-
-            return [post.to_dict() for post in user.posts], 200
-        
-        return {'error': '401 Unauthorized'}, 401
         
     def post(self):
 

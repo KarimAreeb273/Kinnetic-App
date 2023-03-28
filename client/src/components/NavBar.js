@@ -21,6 +21,9 @@ function NavBar({ setUser }) {
         <Button as={Link} to="/new">
           New Post
         </Button>
+        <Button as={Link} to="/profile">
+          Check Profile
+        </Button>
         <Button onClick={handleLogoutClick}>
           Logout
         </Button>

@@ -2,13 +2,17 @@ import React, { useEffect, useState } from "react";
 import Login from "./pages/Login";
 import NewPost from "./pages/NewPost";
 import Posts from "./pages/Posts";
+import Profile from "./pages/Profile";
 import NavBar from "./NavBar";
+import SearchBar from "./SearchBar";
+import { SearchResultsList } from "./SearchResultsList";
 import { Switch, Route } from "react-router-dom";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
+  const [results, setResults] = useState([]);
+//   const [users, setUsers] = useState([]);
+//   const [search, setSearch] = useState("");
 
   useEffect(() => {
     // auto-login
@@ -19,26 +23,30 @@ function App() {
     });
   }, []);
 
-  useEffect(() => {
-    fetch("/users").then((r) => {
-      if (r.ok) {
-        r.json().then((users) => setUsers(users));
-      }
-    });
-  }, []);
+//   useEffect(() => {
+//     fetch("/users").then((r) => {
+//       if (r.ok) {
+//         r.json().then((users) => setUsers(users));
+//       }
+//     });
+//   }, []);
 
-  let fetchusers = users.filter(user => user.name.toLowerCase().includes(search.toLowerCase()));
+//   let fetchusers = users.filter(user => user.name.toLowerCase().includes(search.toLowerCase()));
 
   if (!user) return <Login onLogin={setUser} />;
 
   return (
     <>
       <NavBar setUser={setUser} />
-      <Users userList = {fetchusers} search = {search} setSearch = {setSearch}/>
+      <SearchBar setResults={setResults} />
+        {results && results.length > 0 && <SearchResultsList results={results} />}
       <main>
         <Switch>
           <Route path="/new">
-            <NewPost user={user} />
+            <NewPost />
+          </Route>
+          <Route path="/profile">
+            <Profile user={user} />
           </Route>
           <Route path="/">
             <Posts />
