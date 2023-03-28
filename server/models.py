@@ -6,11 +6,13 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-_password_hash',)
+    serialize_rules = ('-posts.user','-_password_hash',)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     _password_hash = db.Column(db.String)
+     
+    posts = db.relationship('Post', backref='user')
 
     @hybrid_property
     def password_hash(self):
@@ -28,3 +30,14 @@ class User(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+class Post(db.Model, SerializerMixin):
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return f'<Post {self.id}: {self.title}>'

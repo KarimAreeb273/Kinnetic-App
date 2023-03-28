@@ -14,7 +14,7 @@ function NewPost({ user }) {
     function handleSubmit(e) {
       e.preventDefault();
       setIsLoading(true);
-      fetch("/recipes", {
+      fetch("/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

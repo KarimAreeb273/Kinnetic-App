@@ -3,15 +3,22 @@
 # Standard library imports
 
 # Remote library imports
-from flask import request, session
+from flask import request, session, make_response
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 
 # Local imports
 from config import app, db, api
-from models import User
+from models import User, Post
 
 # Views go here!
+
+class Users(Resource):
+    def get(self):
+        users = User.query.all()
+        user_dict = [user.to_dict(rules=('-posts',)) for user in users]
+        response = make_response(user_dict, 200)
+        return response
 
 class Signup(Resource):
     
@@ -93,11 +100,50 @@ class Logout(Resource):
         
         return {'error': '401 Unauthorized'}, 401
 
+class Posts(Resource):
 
+    def get(self):
+
+        if session.get('user_id'):
+
+            user = User.query.filter(User.id == session['user_id']).first()
+
+            return [post.to_dict() for post in user.posts], 200
+        
+        return {'error': '401 Unauthorized'}, 401
+        
+    def post(self):
+
+        if session.get('user_id'):
+
+            request_json = request.get_json()
+
+            title = request_json['title']
+
+            try:
+
+                post = Post(
+                    title=title,
+                    user_id=session['user_id'],
+                )
+
+                db.session.add(post)
+                db.session.commit()
+
+                return post.to_dict(), 201
+
+            except IntegrityError:
+
+                return {'error': '422 Unprocessable Entity'}, 422
+
+        return {'error': '401 Unauthorized'}, 401
+
+api.add_resource(Users, '/users', endpoint='users')
 api.add_resource(Signup, '/signup', endpoint='signup')
 api.add_resource(CheckSession, '/check_session', endpoint='check_session')
 api.add_resource(Login, '/login', endpoint='login')
 api.add_resource(Logout, '/logout', endpoint='logout')
+api.add_resource(Posts, '/posts', endpoint='posts')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
