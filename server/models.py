@@ -6,7 +6,7 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-posts.user','-_password_hash',)
+    serialize_rules = ('-posts.user','-profiles.user','-_password_hash',)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -14,6 +14,7 @@ class User(db.Model, SerializerMixin):
      
     posts = db.relationship('Post', backref='user')
     profile = db.relationship('Profile', backref='user')
+    user_events = db.relationship("UserEvent", backref="user")
 
     @hybrid_property
     def password_hash(self):
@@ -35,8 +36,13 @@ class User(db.Model, SerializerMixin):
 class Post(db.Model, SerializerMixin):
     __tablename__ = 'posts'
 
+    serialize_rules = ('-user',)
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
+    image = db.Column(db.String)
+    description = db.Column(db.String)
+    likes = db.Column(db.Integer, default=0)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
@@ -46,7 +52,10 @@ class Post(db.Model, SerializerMixin):
 class Profile(db.Model, SerializerMixin):
     __tablename__ = 'profile'
 
+    serialize_rules = ('-user.profile', '-user.id', '-user.username',)
+
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
     image_url = db.Column(db.String, nullable=False)
     bio = db.Column(db.String, nullable=False)
 
@@ -55,3 +64,26 @@ class Profile(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Post {self.id}: {self.bio}>'
 
+class Event(db.Model, SerializerMixin):
+    __tablename__ = 'events'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    location = db.Column(db.String, nullable=False)
+    date = db.Column(db.String, nullable=False)
+
+    user_events = db.relationship("UserEvent", backref="events")
+
+    def __repr__(self):
+        return f'<Post {self.id}: {self.name}>'
+
+class UserEvent(db.Model, SerializerMixin):
+    __tablename__ = 'users_events'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    event_id = db.Column(db.Integer(), db.ForeignKey('events.id'))
+
+
+# Issues: 1. Cannot get accurate profile page 4. Sometimes the username is buggy

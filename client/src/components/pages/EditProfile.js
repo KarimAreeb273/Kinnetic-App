@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Errors, Input, Label } from "../styles";
 import { Form, Button } from "semantic-ui-react";
 
 
-function NewPost() {
-    const [title, setTitle] = useState("");
+function EditProfile() {
+    const [name, setName] = useState("");
     const [image, setImage] = useState("");
-    const [description, setDescription] = useState("");
+    const [bio, setBio] = useState("");
     const [errors, setErrors] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const history = useHistory();
@@ -16,15 +17,15 @@ function NewPost() {
     function handleSubmit(e) {
       e.preventDefault();
       setIsLoading(true);
-      fetch("/posts", {
+      fetch("/profiles", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title,
-          image, 
-          description
+          name,
+          image,
+          bio
         }),
       }).then((r) => {
         setIsLoading(false);
@@ -39,19 +40,10 @@ function NewPost() {
     return (
       <Wrapper>
         <WrapperChild>
-          <h2>Create Post</h2>
+          <h2>Edit your profile</h2>
           <Form onSubmit={handleSubmit}>
             <Form.Field>
-              <Label htmlFor="title">Title</Label>
-              <Input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </Form.Field>
-            <Form.Field>
-              <Label htmlFor="image">Add Image</Label>
+              <Label htmlFor="image">Profile Picture</Label>
               <Input
                 type="text"
                 id="image"
@@ -60,16 +52,25 @@ function NewPost() {
               />
             </Form.Field>
             <Form.Field>
-              <Label htmlFor="description">Content</Label>
+              <Label htmlFor="name">Name</Label>
               <Input
                 type="text"
-                id="title"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </Form.Field>
             <Form.Field>
-              <Button color="primary" type="submit">
+              <Label htmlFor="bio">Bio</Label>
+              <Input
+                type="text"
+                id="bio"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+              />
+            </Form.Field>
+            <Form.Field>
+              <Button color="primary" type="submit" as={Link} to={`/profile`} >
                 {isLoading ? "Loading..." : "Submit Post"}
               </Button>
             </Form.Field>
@@ -96,4 +97,4 @@ function NewPost() {
     flex: 1;
   `;
   
-  export default NewPost;
+  export default EditProfile;

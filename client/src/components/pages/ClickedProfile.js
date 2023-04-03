@@ -4,11 +4,9 @@ import styled from "styled-components";
 import { Box } from "../styles";
 import { Button } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
-import "../SearchResultsList.css";
 
 function Profile() {
   const [profile, setProfile] = useState([]);
-  const [posts, setPosts] = useState([]);
   const { id } = useParams();
 
   useEffect(() => {
@@ -17,13 +15,7 @@ function Profile() {
       .then(prof => setProfile(prof))
   }, []);
 
-  useEffect(() => {
-    fetch(`/postsbyuser`)
-      .then((r) => r.json())
-      .then(prof => setPosts(prof))
-  }, []);
-
-  console.log(posts);
+  console.log(profile);
   
   return (
     <Wrapper>
@@ -31,8 +23,8 @@ function Profile() {
         // profile.map((prof) => (
             <Post key={profile[profile.length-1].id}>
             <Box>
-            <Button as={Link} to="/changeprofile">
-            Change your profile
+            <Button as={Link} to="/editprofile">
+            Edit your profile
             </Button>
               <Boxchild>
                 <img src={profile[profile.length-1].image_url}/>
@@ -49,29 +41,6 @@ function Profile() {
           </Button>
         </>
       )}
-      User Posts
-      <div className="results-list">
-        {posts.length > 0 ? (
-        posts.map((post) => (
-          <Post key={post.id}>
-            <Box>
-              <h2>{post.title}</h2>
-              {/* <img src={post.image} /> */}
-            </Box>
-            <Button as={Link} to={`/posts/${post.id}`}>
-            See Post
-          </Button>
-          </Post>
-        ))
-      ) : (
-        <>
-          <h2>No Posts in your feed</h2>
-          <Button as={Link} to="/new">
-            Make a New Post
-          </Button>
-        </>
-      )}
-      </div>
     </Wrapper>
   );
 

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import "./SearchBar.css";
 
 const SearchBar = ({ setResults }) => {
   const [input, setInput] = useState("");
+
 
   const fetchData = (value) => {
     fetch("/users")
@@ -22,6 +24,8 @@ const SearchBar = ({ setResults }) => {
       });
   };
 
+  // include ID here, pass through as a prop
+  
   const handleChange = (value) => {
     setInput(value);
     fetchData(value);
@@ -37,5 +41,5 @@ const SearchBar = ({ setResults }) => {
     </div>
   );
 };
-
+ 
 export default SearchBar

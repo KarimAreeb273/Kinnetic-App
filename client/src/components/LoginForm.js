@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Errors, Input, Label } from "./styles";
 import { Form, Button } from "semantic-ui-react";
+import "./LoginForm.css";
 
 function LoginForm({ onLogin }) {
   const [username, setUsername] = useState("");

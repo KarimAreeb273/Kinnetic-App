@@ -1,0 +1,166 @@
+#root {
+    min-width: 1000px;
+    overflow: auto;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .nav-header, .fighter-container, .fighter-page {
+    min-width: 1000px;
+  }
+  
+  .nav-header {
+    height: 200px;
+    border-bottom: 12px red ridge;
+    overflow: hidden;
+  }
+  
+  .nav-header img {
+    margin: 50px 0 0 0;
+    max-height: 100px;
+  }
+  
+  .nav-btn {
+    max-height: 100px;
+    width: max-content;
+  }
+  
+  #root > div > div.nav-header > a:nth-child(4) {
+    width: 100px;
+  }
+  
+  .search-sort {
+    text-align: center;
+  }
+  
+  .fighter-btn {
+    width: 100%;
+  }
+  
+  #form-title {
+    margin-top: 20px;
+  }
+  
+  .buttonContainer {
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .fighter-card {
+    text-align: center;
+  }
+  
+  #card-title {
+    border-bottom: 2px rgba(0, 0, 0, 0.5) ridge;
+    padding: 0 5px;
+  }
+  
+  #root > div > section > div.fighter-title > a {
+    width: max-content;
+  }
+  
+  .fighter-title {
+    text-align: left;
+    display: inline-grid;
+    width: max-content;
+    margin: 50px 25px 0 0;
+  }
+  
+  .fighter-title img {
+    width: 350px;
+  }
+  
+  .fighter-details {
+    text-align: left;
+    display: inline-grid;
+    width: 50%;
+  }
+  
+  #root > div > div.ui.comments > h3 {
+    height: max-content;
+  }
+  
+  .page-number-container {
+    margin: 25px 0;
+    text-align: center;
+  }
+  
+  #comment-btn, body > div.ui.page.modals.dimmer.transition.visible.active > div > div.actions > button {
+    background-color: red !important;
+    border: 2px white solid !important;
+  }
+  
+  #comment-btn:hover, body > div.ui.page.modals.dimmer.transition.visible.active > div > div.actions > button:hover {
+    background-color: white !important;
+    border: 2px red solid !important;
+    color: red !important;
+  }
+  
+  .highlight-btn, .poll-btn {
+    width: max-content;
+  }
+  
+  #socials {
+    margin-right: 15%;
+    margin-left: 3%;
+    padding-bottom: 50px;
+  }
+  
+  #like-btn {
+    margin-right: 84.857%;
+  }
+  
+  .poll {
+    width: 1127px;
+    text-align: center;
+  }
+  .option {
+    display: flex;
+  }
+  
+  .option > button {
+    min-width: 75px;
+  }
+  
+  #bar {
+    background-color: rgb(255, 0, 0);
+    border: 2px rgba(255, 0, 0, 0.5) solid;
+    border-radius: 5px;
+    max-width: 1127px;
+    transition: width .5s;
+  }
+  
+  .fighter-poll {
+    width: 1127px;
+    text-align: center;
+  }
+  .fighter-option {
+    display: flex;
+  }
+  
+  .fighter-option > button {
+    min-width: 75px;
+  }
+  
+  #fighter-bar {
+    background-color: rgb(255, 0, 0);
+    border: 2px rgba(255, 0, 0, 0.5) solid;
+    border-radius: 5px;
+    max-width: 73.5%;
+    transition: width .5s;
+  }
+  
+  #root > div > form > button {
+    color: white;
+    background-color: red !important;
+    border: 2px white solid !important;
+  }
+  
+  #root > div > form > button:hover {
+    background-color: white !important;
+    border: 2px red solid !important;
+    color: red !important;
+  }

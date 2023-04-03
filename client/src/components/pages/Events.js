@@ -5,11 +5,11 @@ import { Box } from "../styles";
 import { Button } from "semantic-ui-react";
 import "../SearchResultsList.css";
 
-function Posts() {
+function Events() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch("/posts")
+    fetch("/events")
       .then((r) => r.json())
       .then(posts => setPosts(posts))
   }, []);
@@ -30,13 +30,12 @@ function Posts() {
         ))
       ) : (
         <>
-          <h2>No Posts in your feed</h2>
+          <h2>No Upcoming Events</h2>
           <Button as={Link} to="/new">
-            Make a New Post
+            Start a new event
           </Button>
         </>
       )}
-      End of your feed!!!
     </Wrapper>
   );
 }
@@ -50,4 +49,4 @@ const Post = styled.article`
   margin-bottom: 24px;
 `;
 
-export default Posts;
+export default Events;
