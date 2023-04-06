@@ -34,7 +34,7 @@ function PostPage({user, post, setPost}) {
     const { id } = useParams();
 
     useEffect(() => {
-      fetch(`/profiles/${id}`)
+      fetch(`/posts/${id}`)
         .then((r) => r.json())
         .then(pos => {
             setPosts(pos)

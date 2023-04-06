@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 # Local imports
 from config import app, db, api
-from models import User, Post, Profile, Event, Comment
+from models import User, Post, Profile, Event, Comment, UserEvent
 
 # Views go here!
 
@@ -317,9 +317,8 @@ class Events(Resource):
 
             try:
 
-                event = Post(
+                event = Event(
                     name=name,
-                    user_id=session['user_id'],
                     location=location,
                     date=date
                 )
@@ -335,6 +334,33 @@ class Events(Resource):
 
         return {'error': '401 Unauthorized'}, 401
 
+class UserEvents(Resource):
+    def post(self):
+        new = request.get_json()
+        try:
+            new_events = UserEvent (
+                user_id = new['user_id'],
+                event_id = new['event_id']
+            )
+
+            db.session.add(new_events)
+            db.session.commit()
+
+            new_events_dict = new_events.pizzas.to_dict()
+            response = make_response(new_events_dict, 201)
+            return response
+        except IntegrityError:
+                return {'error': '422 Unprocessable Entity'}, 422
+
+    def delete(self, id):
+        rem_events = UserEvent.query.filter(UserEvent.id == id).first()
+        if not rem_events: 
+            return make_response({"error": "Event not found"}, 404)
+        db.session.delete(rem_events)
+        db.session.commit()
+        response = make_response({}, 200)
+        return response
+
 api.add_resource(Users, '/users', endpoint='users')
 api.add_resource(UserById, '/usersbyid', endpoint='usersbyid')
 api.add_resource(Signup, '/signup', endpoint='signup')
@@ -349,6 +375,7 @@ api.add_resource(Profiles, '/profiles', endpoint='profiles')
 api.add_resource(ProfileById, '/profiles/<int:id>', endpoint='profiles/<int:id>')
 api.add_resource(AllProfiles, '/allprofiles', endpoint='allprofiles')
 api.add_resource(Events, '/events', endpoint='events')
+api.add_resource(UserEvents, '/userevents', endpoint='userevents')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

@@ -14,14 +14,46 @@ function Events() {
       .then(posts => setPosts(posts))
   }, []);
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    setIsLoading(true);
+    fetch("/events", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        location,
+        date
+      }),
+    }).then((r) => {
+      setIsLoading(false);
+      if (r.ok) {
+        history.push("/events");
+      } else {
+        r.json().then((err) => setErrors(err.errors));
+      }
+    });
+  }
+
+  function handleDelete(id){
+    fetch(`/cars/${id}`, { 
+      method: 'DELETE' ,
+      headers: { 'Content-Type': 'application/json'},
+    })
+    .then(() => setDeleted(!deleted))
+    .then(() => history.push('/cars'))
+  }
+     
+
   return (
     <Wrapper className="results-list" >
       {posts.length > 0 ? (
         posts.map((post) => (
           <Post key={post.id}>
             <Box>
-              <h2>{post.title}</h2>
-              {/* <img src={post.image} /> */}
+              <h2>{post.name}</h2>
             </Box>
             <Button as={Link} to={`/events/${post.id}`}>
             See Events

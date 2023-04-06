@@ -87,6 +87,7 @@ class Event(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     location = db.Column(db.String, nullable=False)
     date = db.Column(db.String, nullable=False)
+    
 
     user_events = db.relationship("UserEvent", backref="events")
 
