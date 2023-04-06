@@ -6,7 +6,7 @@ import { Errors, Input, Label } from "../styles";
 import { Form, Button } from "semantic-ui-react";
 
 
-function EditProfile() {
+function AddProfile() {
     const [name, setName] = useState("");
     const [image, setImage] = useState("");
     const [bio, setBio] = useState("");
@@ -16,7 +16,7 @@ function EditProfile() {
   
     function handleSubmit(e) {
       e.preventDefault();
-      setIsLoading(true);
+      // setIsLoading(true);
       fetch("/profiles", {
         method: "POST",
         headers: {
@@ -30,7 +30,7 @@ function EditProfile() {
       }).then((r) => {
         setIsLoading(false);
         if (r.ok) {
-          history.push("/");
+          history.push("/profile");
         } else {
           r.json().then((err) => setErrors(err.errors));
         }
@@ -40,7 +40,7 @@ function EditProfile() {
     return (
       <Wrapper>
         <WrapperChild>
-          <h2>Edit your profile</h2>
+          <h2>Add your profile</h2>
           <Form onSubmit={handleSubmit}>
             <Form.Field>
               <Label htmlFor="image">Profile Picture</Label>
@@ -70,7 +70,7 @@ function EditProfile() {
               />
             </Form.Field>
             <Form.Field>
-              <Button color="primary" type="submit" as={Link} to={`/profile`} >
+              <Button color="primary" type="submit" >
                 {isLoading ? "Loading..." : "Submit Post"}
               </Button>
             </Form.Field>
@@ -97,4 +97,4 @@ function EditProfile() {
     flex: 1;
   `;
   
-  export default EditProfile;
+  export default AddProfile;

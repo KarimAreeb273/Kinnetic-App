@@ -1,46 +1,71 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Box } from "../styles";
 import { Button } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
+import "../SearchResultsList.css";
 
-function Profile() {
+function ClickedProfile() {
   const [profile, setProfile] = useState([]);
+  const [posts, setPosts] = useState([]);
   const { id } = useParams();
 
   useEffect(() => {
-    fetch(`/profiles`)
+    fetch(`/profiles/${id}`)
       .then((r) => r.json())
-      .then(prof => setProfile(prof))
+      .then(pos => {
+          setProfile(pos)
+      })
   }, []);
 
-  console.log(profile);
+  console.log(profile)
+
+  useEffect(() => {
+    fetch(`/postsbyuser`)
+      .then((r) => r.json())
+      .then(prof => setPosts(prof))
+  }, []);
+
   
   return (
     <Wrapper>
-      {profile.length > 0 ? (
+      {!profile.length > 0 ? (
         // profile.map((prof) => (
-            <Post key={profile[profile.length-1].id}>
+            <Post key={profile.id}>
             <Box>
-            <Button as={Link} to="/editprofile">
-            Edit your profile
-            </Button>
               <Boxchild>
-                <img src={profile[profile.length-1].image_url}/>
+                <img src={profile.image_url}/>
               </Boxchild>
-              <h2>{profile[profile.length-1].name}</h2>
-              <h4>{profile[profile.length-1].bio}</h4>
+              <h2>{profile.name}</h2>
+              <h4>{profile.bio}</h4>
             </Box>
           </Post>       
       ) : (
         <>
           <h2>No Profile information</h2>
-          <Button as={Link} to="/editprofile">
-            Edit your profile
-          </Button>
         </>
       )}
+      User Posts
+      <div className="results-list">
+        {!posts.length > 0 ? (
+        posts.map((post) => (
+          <Post key={post.id}>
+            <Box>
+              <h2>{post.title}</h2>
+              {/* <img src={post.image} /> */}
+            </Box>
+            <Button as={Link} to={`/posts/${post.id}`}>
+            See Post
+          </Button>
+          </Post>
+        ))
+      ) : (
+        <>
+          <h2>No Posts</h2>
+        </>
+      )}
+      </div>
     </Wrapper>
   );
 
@@ -62,4 +87,4 @@ const Boxchild = styled.div`
   padding: 16px;
 `;
 
-export default Profile;
+export default ClickedProfile;

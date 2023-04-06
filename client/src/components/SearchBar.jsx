@@ -5,6 +5,7 @@ import "./SearchBar.css";
 
 const SearchBar = ({ setResults }) => {
   const [input, setInput] = useState("");
+  const initialInput = ''
 
 
   const fetchData = (value) => {
@@ -20,7 +21,6 @@ const SearchBar = ({ setResults }) => {
           );
         });
         setResults(results);
-        console.log(results);
       });
   };
 

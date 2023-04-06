@@ -1,12 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import "./PostPage.css";
 import { useParams, Link } from 'react-router-dom';
+import Comments from "./Comments"
 import { Icon, Button, Container } from 'semantic-ui-react';
 
-function PostPage() {
+function PostPage({user, post, setPost}) {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    let hour = date.getHours();
+    let minutes = date.getMinutes();
+    const AMPM = hour >= 12 ? 'PM' : 'AM';
+    hour = hour > 12 ? hour - 12 : hour;
+    minutes = minutes < 10 ? `0${minutes}` : minutes;
+
+    const timestamp = `${month + 1}/${day}/${year} at ${hour}:${minutes}${AMPM}`;
+    const likes = post.likes
+    const initialInput = {
+        text: "",
+        post_id: null,
+        user_id: null
+    }
+    const [comments, setComments] = useState([]);
+    const [input, setInput] = useState(initialInput);
     const [posts, setPosts] = useState([]);
-    const [likes, setLikes] = useState(0);
-    const [input, setInput] = useState({
+    const [postLikes, setPostLikes] = useState(likes);
+    const [inputs, setInputs] = useState({
         title: "",
         image: "",
         description: "",
@@ -14,9 +34,11 @@ function PostPage() {
     const { id } = useParams();
 
     useEffect(() => {
-      fetch(`/posts/${id}`)
+      fetch(`/profiles/${id}`)
         .then((r) => r.json())
-        .then(posts => setPosts(posts))
+        .then(pos => {
+            setPosts(pos)
+        })
     }, []);
 
     console.log(posts)
@@ -29,42 +51,46 @@ function PostPage() {
         }
 
         function handleLikes() {
+            const updatedLikes = likes + 1;
+            setPostLikes(updatedLikes);
             fetch(`posts/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    likes: likes + 1
+                    likes: updatedLikes,
                 })
             })
                 .then(r => r.json())
-                .then(posts => {
-                    setLikes(posts.likes);
+                .then((post) => {
+                    const updatedPost = posts.map((ogPost) => {
+                        if (ogPost.id === post.id) {
+                            return post
+                    } else {
+                        return ogPost
+                    }
+                })
+                    setPost(updatedPost);
                 });
         }
 
-        // function handleComment(e) {
-        //     e.preventDefault();
-
-        //     const newComment = {
-        //         author: input.author,
-        //         comment: input.comment,
-        //         timestamp: timestamp,
-        //     }
-
-        //     fetch(`http://localhost:3001/fighters/${id}`, {
-        //         method: 'PATCH',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({
-        //             comments: [...fighterComments, newComment]
-        //         })
-        //     })
-        //         .then(r => r.json())
-        //         .then(fighter => {
-        //             setFighterComments(fighter.comments);
-        //             console.log(fighterComments)
-        //             setInput(initialInput);
-        //         });
-        // }
+        function handleComment(e) {
+            e.preventDefault();
+            fetch(`/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: input.text,
+                    post_id: id,
+                    user_id: user.id
+                })
+            })
+                .then(r => r.json())
+                .then(comment => {
+                    console.log(comment.text)
+                    setComments([comment, ...comments]);
+                    setInput(initialInput)
+                });
+        }
 
         return (
             <>
@@ -81,8 +107,8 @@ function PostPage() {
                         <h2>{posts.description}</h2>
                     </div>
                 </div>
-                {/* <Comments comments={fighterComments} author={input.author} comment={input.comment} timestamp={input.timestamp} handleChanges={handleChanges} handleComment={handleComment} />
-                <br /> */}
+                <Comments comments={comments} text={input.text} handleChanges={handleChanges} handleComment={handleComment} />
+                <br />
             </>
         );
     } else {

@@ -4,11 +4,10 @@ import NewPost from "./pages/NewPost";
 import Posts from "./pages/Posts";
 import PostPage from "./pages/PostPage";
 import Profile from "./pages/Profile";
-import EditProfile from "./pages/EditProfile";
-import ChangeProfile from "./pages/ChangeProfile";
-import EditPost from "./pages/EditPost";
-import Events from "./pages/Events";
+import AddProfile from "./pages/AddProfile";
 import ClickedProfile from "./pages/ClickedProfile";
+import Events from "./pages/Events";
+import NewEvents from "./pages/NewEvents";
 import NavBar from "./NavBar";
 import SearchBar from "./SearchBar";
 import "./App.css";
@@ -19,6 +18,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [results, setResults] = useState([]);
   const [users, setUsers] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState([]);
 //   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -38,6 +39,14 @@ function App() {
     });
   }, []);
 
+  useEffect(() => {
+    fetch("/posts").then((r) => {
+      if (r.ok) {
+        r.json().then((post) => setPosts(post));
+      }
+    });
+  }, []);
+
   function onUpdatePost(updatedPost) {
     const updatedPosts = users.map(ogPost => {
         if (ogPost.id === updatedPost.id)
@@ -47,6 +56,22 @@ function App() {
     });
     setUsers(updatedPosts);
 }
+
+//  const testing = (e) =>  {
+//   console.log(results)
+//  return (
+//   <div className="results-list">
+//     {results.map((result, id) => {
+//       return (
+//       <ClickedProfile result = {result} username={result.username} key={id} i={result.id} />
+//       )
+//     })}
+//   </div>
+// )
+// }
+
+
+
 
 //   let fetchusers = users.filter(user => user.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -64,22 +89,22 @@ function App() {
             <NewPost />
           </Route>
           <Route path="/posts/:id">
-            <PostPage />
+            <PostPage post = {posts} setPost = {setPosts} user = {user}/>
           </Route>
-          <Route path="/profile">
+          <Route exact path="/profile">
             <Profile />
           </Route>
-          <Route path='/posts/:id/edit'>
-            <EditPost onUpdatePost={onUpdatePost}/>
+          <Route exact path="/profile/:id">
+            <ClickedProfile />
           </Route>
-          <Route path="/editprofile">
-            <EditProfile />
+          <Route path="/addprofile">
+            <AddProfile />
           </Route>
           <Route path="/events">
             <Events />
           </Route>
-          <Route path="/changeprofile">
-            <ChangeProfile onUpdatePost={onUpdatePost}/>
+          <Route path="/newevent">
+            <NewEvents />
           </Route>
           <Route path="/">
             <Posts />

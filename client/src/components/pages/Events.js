@@ -23,15 +23,15 @@ function Events() {
               <h2>{post.title}</h2>
               {/* <img src={post.image} /> */}
             </Box>
-            <Button as={Link} to={`/posts/${post.id}`}>
-            See Post
+            <Button as={Link} to={`/events/${post.id}`}>
+            See Events
           </Button>
           </Post>
         ))
       ) : (
         <>
           <h2>No Upcoming Events</h2>
-          <Button as={Link} to="/new">
+          <Button as={Link} to="/newevent">
             Start a new event
           </Button>
         </>

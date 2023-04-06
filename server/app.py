@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 # Local imports
 from config import app, db, api
-from models import User, Post, Profile, Event
+from models import User, Post, Profile, Event, Comment
 
 # Views go here!
 
@@ -160,7 +160,7 @@ class PostsById(Resource):
         return response
 
     def patch(self, id):
-        post = Post.query.filter(Post.id == id).first()
+        post = Post.query.filter_by(id == id).first()
         data = request.get_json()
 
         if not post:
@@ -169,7 +169,7 @@ class PostsById(Resource):
             }, 404)
         try:
             for attr in data:
-                setattr(post, attr, request.get_json()[attr])
+                setattr(post, attr, data[attr])
 
             db.session.add(post)
             db.session.commit()
@@ -195,6 +195,25 @@ class PostsByUser(Resource):
         
         return {'error': '401 Unauthorized'}, 401
 
+class Comments(Resource):
+    def get(self):
+        comments = Comment.query.filter(Comment.post_id == Post.id).all()
+        comments_dict = [comments.to_dict() for comments in comments]
+        response = make_response(comments_dict, 200)
+        return response
+    
+    def post(self):
+        print(request.get_json())
+        new_comment = Comment(
+            text = request.get_json()['text'],
+            post_id = request.get_json()['post_id'],
+            user_id = request.get_json()['user_id']
+        )   
+        db.session.add(new_comment)
+        db.session.commit()
+        return new_comment.to_dict(), 201
+
+
 class Profiles(Resource):
 
     def get(self):
@@ -208,6 +227,8 @@ class Profiles(Resource):
         return {'error': '401 Unauthorized'}, 401
 
     def post(self):
+
+        print("Got to post profile")
 
         if session.get('user_id'):
 
@@ -271,6 +292,13 @@ class ProfileById(Resource):
         response = make_response(profiles_dict, 200)
         return response
 
+class AllProfiles(Resource):
+    def get(self):
+        profiles = Profile.query.all()
+        profile_dict = [profile.to_dict(rules=('-profile.user',)) for profile in profiles]
+        response = make_response(profile_dict, 200)
+        return response
+
 class Events(Resource):
     def get(self):
         events = Event.query.all()
@@ -283,23 +311,23 @@ class Events(Resource):
 
             request_json = request.get_json()
 
-            title = request_json['title']
-            image = request_json['image']
-            description = request_json['description']
+            name = request_json['name']
+            location = request_json['location']
+            date = request_json['date']
 
             try:
 
-                post = Post(
-                    title=title,
+                event = Post(
+                    name=name,
                     user_id=session['user_id'],
-                    image=image,
-                    description=description
+                    location=location,
+                    date=date
                 )
 
-                db.session.add(post)
+                db.session.add(event)
                 db.session.commit()
 
-                return post.to_dict(), 201
+                return event.to_dict(), 201
 
             except IntegrityError:
 
@@ -316,8 +344,10 @@ api.add_resource(Logout, '/logout', endpoint='logout')
 api.add_resource(Posts, '/posts', endpoint='posts')
 api.add_resource(PostsById, '/posts/<int:id>', endpoint='posts/<int:id>')
 api.add_resource(PostsByUser, '/postsbyuser', endpoint='postsbyuser')
+api.add_resource(Comments, '/comments', endpoint='comments')
 api.add_resource(Profiles, '/profiles', endpoint='profiles')
 api.add_resource(ProfileById, '/profiles/<int:id>', endpoint='profiles/<int:id>')
+api.add_resource(AllProfiles, '/allprofiles', endpoint='allprofiles')
 api.add_resource(Events, '/events', endpoint='events')
 
 if __name__ == '__main__':

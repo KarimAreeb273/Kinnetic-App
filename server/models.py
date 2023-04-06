@@ -13,6 +13,7 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
      
     posts = db.relationship('Post', backref='user')
+    comments = db.relationship('Comment', backref='user')
     profile = db.relationship('Profile', backref='user')
     user_events = db.relationship("UserEvent", backref="user")
 
@@ -44,10 +45,25 @@ class Post(db.Model, SerializerMixin):
     description = db.Column(db.String)
     likes = db.Column(db.Integer, default=0)
 
+    posts = db.relationship('Comment', backref='post')
+
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
     def __repr__(self):
         return f'<Post {self.id}: {self.title}>'
+class Comment(db.Model, SerializerMixin):
+    __tablename__ = 'comments'
+
+    serialize_rules = ('-post', "-user", "-profile")
+
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String, nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    def __repr__(self):
+        return f'<Comment {self.id}: {self.text}>'
 
 class Profile(db.Model, SerializerMixin):
     __tablename__ = 'profile'
@@ -86,4 +102,3 @@ class UserEvent(db.Model, SerializerMixin):
     event_id = db.Column(db.Integer(), db.ForeignKey('events.id'))
 
 
-# Issues: 1. Cannot get accurate profile page 4. Sometimes the username is buggy

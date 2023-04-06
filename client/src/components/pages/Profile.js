@@ -22,8 +22,6 @@ function Profile() {
       .then((r) => r.json())
       .then(prof => setPosts(prof))
   }, []);
-
-  console.log(posts);
   
   return (
     <Wrapper>
@@ -44,7 +42,7 @@ function Profile() {
       ) : (
         <>
           <h2>No Profile information</h2>
-          <Button as={Link} to="/editprofile">
+          <Button as={Link} to="/addprofile">
             Edit your profile
           </Button>
         </>
