@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router";
+import { useParams, Link } from 'react-router-dom';
 import styled from "styled-components";
 import { Box } from "../styles";
 import { Button } from "semantic-ui-react";
 import "../SearchResultsList.css";
 
-function Events() {
+function Events({ user }) {
   const [posts, setPosts] = useState([]);
+  const [event, setEvent] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
+  const [isGoing, setIsGoing] = useState(false);
+  const history = useHistory();
+  // const { id } = useParams();
+
 
   useEffect(() => {
     fetch("/events")
@@ -14,38 +22,53 @@ function Events() {
       .then(posts => setPosts(posts))
   }, []);
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  useEffect(() => {
+    fetch("/userevents")
+      .then((r) => r.json())
+      .then((data) => {
+        setEvent(data)
+        setIsGoing(data[0].is_going);
+  })
+}, []);
+
+console.log(event)
+
+
+
+  function handleSubmit(){
     setIsLoading(true);
-    fetch("/events", {
+    fetch("/userevents", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name,
-        location,
-        date
+        user_id: user.id,
+        is_going: true
       }),
-    }).then((r) => {
-      setIsLoading(false);
+    })
+    .then((r) => {
       if (r.ok) {
-        history.push("/events");
+        setIsGoing(true);
       } else {
         r.json().then((err) => setErrors(err.errors));
       }
     });
-  }
+  } 
 
-  function handleDelete(id){
-    fetch(`/cars/${id}`, { 
-      method: 'DELETE' ,
-      headers: { 'Content-Type': 'application/json'},
-    })
-    .then(() => setDeleted(!deleted))
-    .then(() => history.push('/cars'))
-  }
-     
+  function handleDelete(id) {
+      setIsLoading(true);
+      fetch(`/userevent/${user.id}`, {
+        method: "DELETE",
+      })
+      .then((r) => {
+        if (r.ok) {
+          setIsGoing(false);
+          setEvent(event.filter((attendee) => attendee.id !== id));
+        } else {
+          r.json().then((err) => setErrors(err.errors));
+      }});
+    }
 
   return (
     <Wrapper className="results-list" >
@@ -54,6 +77,9 @@ function Events() {
           <Post key={post.id}>
             <Box>
               <h2>{post.name}</h2>
+              <Button onClick={!isGoing ? handleSubmit : handleDelete}>
+                {isGoing ? "Cancel" : "Going"}
+              </Button>
             </Box>
             <Button as={Link} to={`/events/${post.id}`}>
             See Events

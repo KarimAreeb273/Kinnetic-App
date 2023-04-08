@@ -101,7 +101,7 @@ function App() {
             <AddProfile />
           </Route>
           <Route path="/events">
-            <Events />
+            <Events user = {user}/>
           </Route>
           <Route path="/newevent">
             <NewEvents />

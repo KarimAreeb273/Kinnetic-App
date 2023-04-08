@@ -335,25 +335,39 @@ class Events(Resource):
         return {'error': '401 Unauthorized'}, 401
 
 class UserEvents(Resource):
+    def get(self):
+
+        if session.get('user_id'):
+
+            user = User.query.filter(User.id == session['user_id']).first()
+
+            return [userevents.to_dict() for userevents in user.user_events], 200
+        
+        return {'error': '401 Unauthorized'}, 401
     def post(self):
-        new = request.get_json()
-        try:
-            new_events = UserEvent (
-                user_id = new['user_id'],
-                event_id = new['event_id']
-            )
+        if session.get('user_id'):
+            new = request.get_json()
+            try:
+                new_events = UserEvent (
+                    user_id = new['user_id'],
+                    is_going = new['is_going']
+                    # event_id = new['event_id']
+                )
 
-            db.session.add(new_events)
-            db.session.commit()
+                db.session.add(new_events)
+                db.session.commit()
 
-            new_events_dict = new_events.pizzas.to_dict()
-            response = make_response(new_events_dict, 201)
-            return response
-        except IntegrityError:
+                new_events_dict = new_events.to_dict()
+                response = make_response(new_events_dict, 201)
+                return response
+            except IntegrityError:
                 return {'error': '422 Unprocessable Entity'}, 422
+        return {'error': '401 Unauthorized'}, 401
 
+class UserEventById(Resource):
     def delete(self, id):
-        rem_events = UserEvent.query.filter(UserEvent.id == id).first()
+        print(id)
+        rem_events = UserEvent.query.filter(UserEvent.user_id == id).first()
         if not rem_events: 
             return make_response({"error": "Event not found"}, 404)
         db.session.delete(rem_events)
@@ -376,6 +390,7 @@ api.add_resource(ProfileById, '/profiles/<int:id>', endpoint='profiles/<int:id>'
 api.add_resource(AllProfiles, '/allprofiles', endpoint='allprofiles')
 api.add_resource(Events, '/events', endpoint='events')
 api.add_resource(UserEvents, '/userevents', endpoint='userevents')
+api.add_resource(UserEventById, '/userevent/<int:id>', endpoint='userevents/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

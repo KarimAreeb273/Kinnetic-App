@@ -6,7 +6,7 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-posts.user','-profiles.user','-_password_hash',)
+    serialize_rules = ('-posts.user','-profiles.user','-_password_hash','-user_events.user',"-comments.user",)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -83,11 +83,13 @@ class Profile(db.Model, SerializerMixin):
 class Event(db.Model, SerializerMixin):
     __tablename__ = 'events'
 
+    serialize_rules = ('-user_events',)
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     location = db.Column(db.String, nullable=False)
     date = db.Column(db.String, nullable=False)
-    
+
 
     user_events = db.relationship("UserEvent", backref="events")
 
@@ -97,7 +99,10 @@ class Event(db.Model, SerializerMixin):
 class UserEvent(db.Model, SerializerMixin):
     __tablename__ = 'users_events'
 
+    serialize_rules = ('-user.user_events','-events.user_events','-user.profile','-user.posts','-user.comments')
+
     id = db.Column(db.Integer, primary_key=True)
+    is_going = db.Column(db.Boolean, default=False)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
     event_id = db.Column(db.Integer(), db.ForeignKey('events.id'))
