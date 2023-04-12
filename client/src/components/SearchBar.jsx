@@ -17,7 +17,7 @@ const SearchBar = ({ setResults }) => {
             value &&
             user &&
             user.username &&
-            user.username.includes(value)
+            user.username.toLowerCase().includes(value)
           );
         });
         setResults(results);

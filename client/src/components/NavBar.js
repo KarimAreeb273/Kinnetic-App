@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
+import { UserContext } from "../UserContext";
 
-function NavBar({ setUser, user }) {
+function NavBar() {
+  const [user, setUser] = useContext(UserContext);
 
-  const [profile, setProfile] = useState([]);
-//   const [name, setName] = useState("");
   function handleLogoutClick() {
     fetch("/logout", { method: "DELETE" }).then((r) => {
       if (r.ok) {
@@ -15,41 +15,26 @@ function NavBar({ setUser, user }) {
     });
   }
 
-  useEffect(() => {
-    fetch(`/profiles`)
-      .then((r) => r.json())
-      .then(prof => setProfile(prof))
-  }, []);
-
-//   console.log(profile[0].id)
-
-// const name = user[0].username    
-
-//   const id = profile[0].id
 
   return (
-    <Wrapper>
-      <Logo>
-        <Link to="/">Kinnetic</Link>
-      </Logo>
-      <Nav>
-        <LogoMini>
-            Welcome!
-        </LogoMini>
-        <Button as={Link} to="/new">
-          New Post
-        </Button>
-        <Button as={Link} to="/events">
-          Events
-        </Button>
-        <Button as={Link} to={`/profile`}>
-          Check Profile
-        </Button>
-        <Button onClick={handleLogoutClick}>
+    <nav>
+    <div className="nav-wrapper #80deea cyan lighten-3">
+        <Link to="/" className="brand-logo left" style={{color:"black", font: "cursive"}}>Kinnetic</Link>
+      <ul id="nav-mobile" className="right hide-on-med-and-down">
+        <li style={{color:"black"}}> 
+            Welcome, {user.username}!
+        </li>
+        <li ><Link to="/new" style={{color:"black"}}>Create Post</Link></li>
+        <li ><Link to="/events" style={{color:"black"}}>Events</Link></li>
+        <li><Link to="/profile" style={{color:"black"}}>Profile</Link></li>
+        <li>
+          <button className="btn #c62828 red darken-3" onClick={handleLogoutClick}>
           Logout
-        </Button>
-      </Nav>
-    </Wrapper>
+          </button>
+        </li>
+      </ul>
+    </div>
+    </nav>
   );
 }
 

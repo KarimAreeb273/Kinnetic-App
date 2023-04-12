@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Login from "./pages/Login";
 import NewPost from "./pages/NewPost";
 import Posts from "./pages/Posts";
@@ -10,26 +10,15 @@ import Events from "./pages/Events";
 import NewEvents from "./pages/NewEvents";
 import NavBar from "./NavBar";
 import SearchBar from "./SearchBar";
-import "./App.css";
 import { SearchResultsList } from "./SearchResultsList";
 import { Switch, Route } from "react-router-dom";
+import { UserContext } from "../UserContext";
 
 function App() {
-  const [user, setUser] = useState(null);
   const [results, setResults] = useState([]);
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [selectedProfile, setSelectedProfile] = useState([]);
-//   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    // auto-login
-    fetch("/check_session").then((r) => {
-      if (r.ok) {
-        r.json().then((user) => setUser(user));
-      }
-    });
-  }, []);
+  const [user, setUser] = useContext(UserContext);
 
   useEffect(() => {
     fetch("/usersbyid").then((r) => {
@@ -56,24 +45,6 @@ function App() {
     });
     setUsers(updatedPosts);
 }
-
-//  const testing = (e) =>  {
-//   console.log(results)
-//  return (
-//   <div className="results-list">
-//     {results.map((result, id) => {
-//       return (
-//       <ClickedProfile result = {result} username={result.username} key={id} i={result.id} />
-//       )
-//     })}
-//   </div>
-// )
-// }
-
-
-
-
-//   let fetchusers = users.filter(user => user.name.toLowerCase().includes(search.toLowerCase()));
 
   if (!user) return <Login onLogin={setUser} />;
 

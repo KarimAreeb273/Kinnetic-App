@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router";
 import styled from "styled-components";
-import { Errors, Input, Label } from "../styles";
+import { Errors, Input, Label, Textarea } from "../styles";
 import { Form, Button } from "semantic-ui-react";
 
 
@@ -61,7 +61,7 @@ function NewPost() {
             </Form.Field>
             <Form.Field>
               <Label htmlFor="description">Content</Label>
-              <Input
+              <Textarea
                 type="text"
                 id="title"
                 value={description}

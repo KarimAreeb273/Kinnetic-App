@@ -5,7 +5,6 @@ import { Comment, Header, Form, Button } from 'semantic-ui-react';
 function Comments({ comments, text, handleChanges, handleComment }) {
 
     const commentsList = comments?.map((comment) => {
-        // const { comment } = commentObj;
         return (
             <Comment key={comment.id}>
                 <Comment.Content>

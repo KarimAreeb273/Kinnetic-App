@@ -33,8 +33,6 @@ function Events({ user }) {
 
 console.log(event)
 
-
-
   function handleSubmit(){
     setIsLoading(true);
     fetch("/userevents", {
@@ -83,6 +81,9 @@ console.log(event)
             </Box>
             <Button as={Link} to={`/events/${post.id}`}>
             See Events
+          </Button>
+          <Button as={Link} to="/newevent">
+            Start a new event
           </Button>
           </Post>
         ))
