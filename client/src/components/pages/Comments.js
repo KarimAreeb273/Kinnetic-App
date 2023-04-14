@@ -1,18 +1,21 @@
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Comment, Header, Form, Button } from 'semantic-ui-react';
 
 function Comments({ comments, text, handleChanges, handleComment }) {
 
     const commentsList = comments?.map((comment) => {
         return (
+            <>
             <Comment key={comment.id}>
                 <Comment.Content>
                     <Comment.Text>{comment.text}</Comment.Text>
                 </Comment.Content>
             </Comment>
+            </>
         );
     });
+    
 
     return (
         <Comment.Group>

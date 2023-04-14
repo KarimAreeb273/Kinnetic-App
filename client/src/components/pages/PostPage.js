@@ -23,6 +23,7 @@ function PostPage({user, post, setPost}) {
         user_id: null
     }
     const [comments, setComments] = useState([]);
+    const [comm, setComm] = useState([])
     const [input, setInput] = useState(initialInput);
     const [posts, setPosts] = useState([]);
     const [postLikes, setPostLikes] = useState(likes);
@@ -42,6 +43,16 @@ function PostPage({user, post, setPost}) {
     }, []);
 
     console.log(posts)
+
+    useEffect(() => {
+        fetch(`/comments`)
+          .then((r) => r.json())
+          .then(pos => {
+              setComm(pos)
+          })
+      }, []);
+
+    console.log(comm)
 
     if (posts) {
         
@@ -93,7 +104,14 @@ function PostPage({user, post, setPost}) {
         }
 
         return (
-            <>
+            <div className="card input-filed"
+            style={{
+                margin:"30px auto",
+                maxWidth:"700px",
+                padding:"20px",
+                textAlign:"center"
+            }}
+            >
                 <div>
                     <div >
                         <h2>{posts.title}</h2>
@@ -103,13 +121,15 @@ function PostPage({user, post, setPost}) {
                                 <Icon id='edit-btn' name='edit' size='large' color='red' link />
                             </Link>
                         </div>
-                        <img src={posts.image}/>
+                        <div className="card-image">
+                            <img src={posts.image}/>
+                        </div>
                         <h2>{posts.description}</h2>
                     </div>
                 </div>
-                <Comments comments={comments} text={input.text} handleChanges={handleChanges} handleComment={handleComment} />
+                <Comments comments={comm} text={input.text} handleChanges={handleChanges} handleComment={handleComment} />
                 <br />
-            </>
+            </div>
         );
     } else {
         return (

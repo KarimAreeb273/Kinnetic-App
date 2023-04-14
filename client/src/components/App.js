@@ -5,6 +5,7 @@ import Posts from "./pages/Posts";
 import PostPage from "./pages/PostPage";
 import Profile from "./pages/Profile";
 import AddProfile from "./pages/AddProfile";
+import EditProfile from "./pages/EditProfile";
 import ClickedProfile from "./pages/ClickedProfile";
 import Events from "./pages/Events";
 import NewEvents from "./pages/NewEvents";
@@ -16,9 +17,10 @@ import { UserContext } from "../UserContext";
 
 function App() {
   const [results, setResults] = useState([]);
+  const [profile, setProfile] = useState([]);
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [user, setUser] = useContext(UserContext);
+  const [user, setUser, event, setEvent] = useContext(UserContext);
 
   useEffect(() => {
     fetch("/usersbyid").then((r) => {
@@ -36,22 +38,29 @@ function App() {
     });
   }, []);
 
-  function onUpdatePost(updatedPost) {
-    const updatedPosts = users.map(ogPost => {
-        if (ogPost.id === updatedPost.id)
-            return updatedPost;
+  useEffect(() => {
+    fetch(`/profiles`)
+      .then((r) => r.json())
+      .then(prof => setProfile(prof))
+  }, []);
+
+  function onUpdateProfile(updatedProfile) {
+    const updatedPosts = profile.map(ogProf => {
+        if (ogProf.id === updatedProfile.id)
+            return updatedProfile;
         else
-            return ogPost;
+            return ogProf;
     });
-    setUsers(updatedPosts);
+    setProfile(updatedPosts);
 }
+
 
   if (!user) return <Login onLogin={setUser} />;
 
 
   return (
     <div class="wav">
-      <NavBar setUser={setUser} user = {users} />
+      <NavBar setUser={setUser} user = {users} setResults={setResults} results={results}/>
       <SearchBar setResults={setResults} />
         {results && results.length > 0 && <SearchResultsList results={results} />}
       <main >
@@ -70,6 +79,9 @@ function App() {
           </Route>
           <Route path="/addprofile">
             <AddProfile />
+          </Route>
+          <Route path="/editprofile">
+            <EditProfile onUpdateProfile = {onUpdateProfile}/>
           </Route>
           <Route path="/events">
             <Events user = {user}/>

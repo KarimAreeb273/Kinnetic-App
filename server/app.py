@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 # Local imports
 from config import app, db, api
-from models import User, Post, Profile, Event, Comment, UserEvent
+from models import User, Post, Profile, Event, Comment, UserEvent, Follower, Followee
 
 # Views go here!
 
@@ -198,7 +198,7 @@ class PostsByUser(Resource):
 class Comments(Resource):
     def get(self):
         comments = Comment.query.filter(Comment.post_id == Post.id).all()
-        comments_dict = [comments.to_dict() for comments in comments]
+        comments_dict = [comment.to_dict() for comment in comments]
         response = make_response(comments_dict, 200)
         return response
     
@@ -213,7 +213,6 @@ class Comments(Resource):
         db.session.commit()
         return new_comment.to_dict(), 201
 
-
 class Profiles(Resource):
 
     def get(self):
@@ -227,8 +226,6 @@ class Profiles(Resource):
         return {'error': '401 Unauthorized'}, 401
 
     def post(self):
-
-        print("Got to post profile")
 
         if session.get('user_id'):
 
@@ -258,17 +255,23 @@ class Profiles(Resource):
 
         return {'error': '401 Unauthorized'}, 401
 
-    def patch(self, id):
-        profile = Profile.query.filter(Profile.id == id).first()
-        data = request.get_json()
+    def patch(self):
+        profile = Profile.query.filter(Profile.id == session['user_id']).first()
 
         if not profile:
             return make_response({
                 "error": "Profile not found"
             }, 404)
+
+        if session.get('user_id') != profile.user_id:
+            return make_response({
+            "error": "Unauthorized"
+        }, 401)
+
+        data = request.get_json()
         try:
             for attr in data:
-                setattr(profile, attr, request.get_json()[attr])
+                setattr(profile, attr, data[attr])
 
             db.session.add(profile)
             db.session.commit()
@@ -350,8 +353,8 @@ class UserEvents(Resource):
             try:
                 new_events = UserEvent (
                     user_id = new['user_id'],
-                    is_going = new['is_going']
-                    # event_id = new['event_id']
+                    is_going = new['is_going'],
+                    event_id = new['event_id']
                 )
 
                 db.session.add(new_events)
@@ -375,6 +378,57 @@ class UserEventById(Resource):
         response = make_response({}, 200)
         return response
 
+class Followers(Resource):
+    def get(self, id):
+        followers = Follower.query.filter_by(follower_id=id).all()
+        if not followers: 
+            return make_response({"error": "Follower not found"}, 404)
+        follower_dict = [follower.to_dict() for follower in followers]
+        response = make_response(follower_dict, 200)
+        return response
+    def post(self, id):
+        if session.get('user_id'):
+            try:
+                new_follower = Follower(
+                    follower_id = session['user_id']
+                )
+
+                db.session.add(new_follower)
+                db.session.commit()
+
+                new_follower_dict = new_follower.to_dict()
+                response = make_response(new_follower_dict, 201)
+                return response
+            except IntegrityError:
+                return {'error': '422 Unprocessable Entity'}, 422
+        return {'error': '401 Unauthorized'}, 401
+    
+class Followees(Resource):
+    def get(self, id):
+        followees = Followee.query.filter_by(following_id=id).all()
+        if not followees: 
+            return make_response({"error": "Followee not found"}, 404)
+        followee_dict = [followee.to_dict() for followee in followees]
+        response = make_response(followee_dict, 200)
+        return response
+    def post(self, id):
+        if session.get('user_id'):
+            try:
+                new_follower = Followee(
+                    following_id = session['user_id']
+                )
+
+                db.session.add(new_follower)
+                db.session.commit()
+
+                new_follower_dict = new_follower.to_dict()
+                response = make_response(new_follower_dict, 201)
+                return response
+            except IntegrityError:
+                return {'error': '422 Unprocessable Entity'}, 422
+        return {'error': '401 Unauthorized'}, 401
+
+
 api.add_resource(Users, '/users', endpoint='users')
 api.add_resource(UserById, '/usersbyid', endpoint='usersbyid')
 api.add_resource(Signup, '/signup', endpoint='signup')
@@ -391,6 +445,8 @@ api.add_resource(AllProfiles, '/allprofiles', endpoint='allprofiles')
 api.add_resource(Events, '/events', endpoint='events')
 api.add_resource(UserEvents, '/userevents', endpoint='userevents')
 api.add_resource(UserEventById, '/userevent/<int:id>', endpoint='userevents/<int:id>')
+api.add_resource(Followers, '/followers/<int:id>', endpoint='followers/<int:id>')
+api.add_resource(Followees, '/followees/<int:id>', endpoint='followees/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

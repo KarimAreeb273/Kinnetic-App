@@ -14,8 +14,6 @@ export const SearchResult = ({ result, username, id }) => {
         .then((r) => r.json())
         .then(prof => setProfile(prof))
     }, []);
-  console.log(id)
-  console.log(profile)
 
   return (
     <div

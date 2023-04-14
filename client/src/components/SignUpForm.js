@@ -29,9 +29,11 @@ function SignUpForm({ onLogin }) {
         r.json().then((user) => onLogin(user));
       } else {
         r.json().then((err) => setErrors(err.errors));
-      }
-    });
-  }
+      }})
+      .catch(err=>{
+        console.log(err)
+    })
+    };
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -76,5 +78,6 @@ function SignUpForm({ onLogin }) {
     </Form>
   );
 }
+
 
 export default SignUpForm;

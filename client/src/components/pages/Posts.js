@@ -16,21 +16,32 @@ function Posts() {
       .then(posts => setPosts(posts))
   }, []);
 
-  console.log(user, posts)
   return (
     <Wrapper className="results-list" >
+      <div className="card input-filed"
+            style={{
+                margin:"30px auto",
+                maxWidth:"1000px",
+                padding:"20px",
+                textAlign:"center"
+            }}
+            >
       {posts.length > 0 ? (
         posts.map((post) => (
-          <Post key={post.id}>
+          <div className="card home-card" key={post.id}>
             <Box>
               <h2>{post.title}</h2>
+              <div className="card-image">
+                <img style={{width:"250px",height:"200px",borderRadius:"100px"}} src={post.image}/>
+              </div>
               <h5>By: {post.user.username}</h5>
             </Box>
             <Button as={Link} to={`/posts/${post.id}`}>
             See Post
           </Button>
-          </Post>
+          </div>
         ))
+        
       ) : (
         <>
           <h2>No Posts in your feed</h2>
@@ -40,12 +51,13 @@ function Posts() {
         </>
       )}
       End of your feed!!!
+      </div>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.section`
-  max-width: 800px;
+  max-width: 1000px;
   margin: 40px auto;
 `;
 

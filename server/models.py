@@ -1,5 +1,6 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.orm import validates
 
 from config import db, bcrypt
 
@@ -16,6 +17,8 @@ class User(db.Model, SerializerMixin):
     comments = db.relationship('Comment', backref='user')
     profile = db.relationship('Profile', backref='user')
     user_events = db.relationship("UserEvent", backref="user")
+    follower = db.relationship('Follower', backref='user')
+    followee = db.relationship('Followee', backref='user')
 
     @hybrid_property
     def password_hash(self):
@@ -33,6 +36,13 @@ class User(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+    @validates('username')
+    def validate_username(self, key, value):
+        user = User.query.filter(User.username == value).first()
+        if user and user.id != self.id:
+            raise ValueError('Username is already taken.')
+        return value
 
 class Post(db.Model, SerializerMixin):
     __tablename__ = 'posts'
@@ -94,7 +104,7 @@ class Event(db.Model, SerializerMixin):
     user_events = db.relationship("UserEvent", backref="events")
 
     def __repr__(self):
-        return f'<Post {self.id}: {self.name}>'
+        return f'<Event {self.id}: {self.name}>'
 
 class UserEvent(db.Model, SerializerMixin):
     __tablename__ = 'users_events'
@@ -106,5 +116,27 @@ class UserEvent(db.Model, SerializerMixin):
 
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
     event_id = db.Column(db.Integer(), db.ForeignKey('events.id'))
+
+class Follower(db.Model):
+    __tablename__ = 'followers'
+
+    serialize_rules = ('-user.followers',)
+
+    id = db.Column(db.Integer, primary_key=True)
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Follower {self.id}: {self.follower_id}>'
+
+class Followee(db.Model):
+    __tablename__ = 'followee'
+
+    serialize_rules = ('-user.followees',)
+
+    id = db.Column(db.Integer, primary_key=True)
+    following_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Followee {self.id}: {self.following_id}>'
 
 

@@ -13,7 +13,6 @@ function Events({ user }) {
   const [errors, setErrors] = useState([]);
   const [isGoing, setIsGoing] = useState(false);
   const history = useHistory();
-  // const { id } = useParams();
 
 
   useEffect(() => {
@@ -31,8 +30,6 @@ function Events({ user }) {
   })
 }, []);
 
-console.log(event)
-
   function handleSubmit(){
     setIsLoading(true);
     fetch("/userevents", {
@@ -42,7 +39,8 @@ console.log(event)
       },
       body: JSON.stringify({
         user_id: user.id,
-        is_going: true
+        is_going: true,
+        event_id: posts[0].id
       }),
     })
     .then((r) => {
@@ -70,7 +68,7 @@ console.log(event)
 
   return (
     <Wrapper className="results-list" >
-      {posts.length > 0 ? (
+      {posts.length > 0 ? ( 
         posts.map((post) => (
           <Post key={post.id}>
             <Box>
@@ -81,9 +79,6 @@ console.log(event)
             </Box>
             <Button as={Link} to={`/events/${post.id}`}>
             See Events
-          </Button>
-          <Button as={Link} to="/newevent">
-            Start a new event
           </Button>
           </Post>
         ))

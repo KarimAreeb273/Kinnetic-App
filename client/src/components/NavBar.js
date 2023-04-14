@@ -1,11 +1,13 @@
 import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { Button } from "semantic-ui-react";
+import { Modal } from "semantic-ui-react";
+import SearchModal from "./SearchModal";
 import { UserContext } from "../UserContext";
 
-function NavBar() {
+function NavBar({results, setResults}) {
   const [user, setUser] = useContext(UserContext);
+  const [open, setOpen] = useState(false)
 
   function handleLogoutClick() {
     fetch("/logout", { method: "DELETE" }).then((r) => {
@@ -18,12 +20,14 @@ function NavBar() {
 
   return (
     <nav>
-    <div className="nav-wrapper #80deea cyan lighten-3">
-        <Link to="/" className="brand-logo left" style={{color:"black", font: "cursive"}}>Kinnetic</Link>
+    <div className="nav-wrapper white">
+        <Link to="/" className="brand-logo left" style={{color:"black", fontFamily: "Arial"}}>Kinnetic</Link> 
       <ul id="nav-mobile" className="right hide-on-med-and-down">
         <li style={{color:"black"}}> 
             Welcome, {user.username}!
         </li>
+        {/* <li><SearchModal open={open} setOpen={setOpen} results = {results} setResults = {setResults} /></li> */}
+        <li ><Link to="/" style={{color:"black"}}>Home</Link></li>
         <li ><Link to="/new" style={{color:"black"}}>Create Post</Link></li>
         <li ><Link to="/events" style={{color:"black"}}>Events</Link></li>
         <li><Link to="/profile" style={{color:"black"}}>Profile</Link></li>
