@@ -25,8 +25,6 @@ function ClickedProfile() {
       })
   }, []);
 
-  console.log(profile)
-
   useEffect(() => {
     fetch(`/posts/${id}`)
       .then((r) => r.json())
@@ -85,7 +83,7 @@ function ClickedProfile() {
       }
     });
   } 
-  console.log(followers)
+
   return (
     <div style={{maxWidth:"1750px",margin:"0px auto"}}>
     <div style={{

@@ -41,8 +41,6 @@ function Profile() {
       .then(prof => setFollowees(prof))
   }, []);
 
-  console.log(followers, followees)
-  
   return (
     <div style={{maxWidth:"1750px",margin:"0px auto"}}>
     <div>{profile.length > 0 ? (

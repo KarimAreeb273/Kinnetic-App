@@ -12,6 +12,8 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     _password_hash = db.Column(db.String)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
      
     posts = db.relationship('Post', backref='user')
     comments = db.relationship('Comment', backref='user')
@@ -19,6 +21,13 @@ class User(db.Model, SerializerMixin):
     user_events = db.relationship("UserEvent", backref="user")
     follower = db.relationship('Follower', backref='user')
     followee = db.relationship('Followee', backref='user')
+    # Define the sender relationship
+    sent_chats = db.relationship('Chat', foreign_keys='Chat.sender_id',
+                                  backref='sender')
+
+    # Define the receiver relationship
+    received_chats = db.relationship('Chat', foreign_keys='Chat.receiver_id',
+                                      backref='receiver')
 
     @hybrid_property
     def password_hash(self):
@@ -54,6 +63,8 @@ class Post(db.Model, SerializerMixin):
     image = db.Column(db.String)
     description = db.Column(db.String)
     likes = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     posts = db.relationship('Comment', backref='post')
 
@@ -71,6 +82,8 @@ class Comment(db.Model, SerializerMixin):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     def __repr__(self):
         return f'<Comment {self.id}: {self.text}>'
@@ -99,6 +112,8 @@ class Event(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
     location = db.Column(db.String, nullable=False)
     date = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
 
     user_events = db.relationship("UserEvent", backref="events")
@@ -138,5 +153,21 @@ class Followee(db.Model):
 
     def __repr__(self):
         return f'<Followee {self.id}: {self.following_id}>'
+
+class Chat(db.Model, SerializerMixin):
+    __tablename__ = 'chats'
+
+    serialize_rules = ('-user',)
+
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
+
+    sender_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    receiver_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return f'<Chat {self.id}: {self.message}>'
 
 

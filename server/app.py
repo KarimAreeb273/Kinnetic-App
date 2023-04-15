@@ -3,13 +3,13 @@
 # Standard library imports
 
 # Remote library imports
-from flask import request, session, make_response, jsonify
+from flask import request, session, make_response, jsonify, render_template
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 
 # Local imports
-from config import app, db, api
-from models import User, Post, Profile, Event, Comment, UserEvent, Follower, Followee
+from config import app, db, api, socketio
+from models import User, Post, Profile, Event, Comment, UserEvent, Follower, Followee, Chat
 
 # Views go here!
 
@@ -428,6 +428,12 @@ class Followees(Resource):
                 return {'error': '422 Unprocessable Entity'}, 422
         return {'error': '401 Unauthorized'}, 401
 
+class Chats(Resource):
+    def get(self):
+        users = Chat.query.all()
+        user_dict = [user.to_dict() for user in users]
+        response = make_response(user_dict, 200)
+        return response
 
 api.add_resource(Users, '/users', endpoint='users')
 api.add_resource(UserById, '/usersbyid', endpoint='usersbyid')
@@ -447,6 +453,8 @@ api.add_resource(UserEvents, '/userevents', endpoint='userevents')
 api.add_resource(UserEventById, '/userevent/<int:id>', endpoint='userevents/<int:id>')
 api.add_resource(Followers, '/followers/<int:id>', endpoint='followers/<int:id>')
 api.add_resource(Followees, '/followees/<int:id>', endpoint='followees/<int:id>')
+api.add_resource(Chats, '/chats', endpoint='chats')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+    socketio.run(app)
