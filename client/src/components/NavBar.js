@@ -4,10 +4,17 @@ import styled from "styled-components";
 import { Modal } from "semantic-ui-react";
 import SearchModal from "./SearchModal";
 import { UserContext } from "../UserContext";
+import SideBar from "./SideBar";
 
 function NavBar({results, setResults}) {
   const [user, setUser] = useContext(UserContext);
   const [open, setOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  function toggleSidebar() {
+    setIsSidebarOpen(!isSidebarOpen);
+  }
+
 
   function handleLogoutClick() {
     fetch("/logout", { method: "DELETE" }).then((r) => {
@@ -22,6 +29,7 @@ function NavBar({results, setResults}) {
     <nav>
     <div className="nav-wrapper white">
         <Link to="/" className="brand-logo left" style={{color:"black", fontFamily: "Arial"}}>Kinnetic</Link> 
+        <div>
       <ul id="nav-mobile" className="right hide-on-med-and-down">
         <li style={{color:"black"}}> 
             Welcome, {user.username}!
@@ -32,12 +40,18 @@ function NavBar({results, setResults}) {
         <li ><Link to="/events" style={{color:"black"}}>Events</Link></li>
         <li><Link to="/profile" style={{color:"black"}}>Profile</Link></li>
         <li>
+          <button style={{ backgroundColor: "#fff", border: "1px solid #ccc", borderRadius: "4px", color: "#333", cursor: "pointer", fontSize: "1rem", marginRight: "8px", padding: "8px", transition: "all 0.3s ease" }} onClick={toggleSidebar}>
+            Friends 
+          </button>
+
           <button className="btn #c62828 red darken-3" onClick={handleLogoutClick}>
           Logout
           </button>
         </li>
       </ul>
+      </div>
     </div>
+    <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
     </nav>
   );
 }

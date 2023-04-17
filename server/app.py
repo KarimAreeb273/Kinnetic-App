@@ -3,9 +3,10 @@
 # Standard library imports
 
 # Remote library imports
-from flask import request, session, make_response, jsonify, render_template
+from flask import request, session, make_response, jsonify, render_template, redirect, url_for
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
+from flask_socketio import emit, join_room, leave_room
 
 # Local imports
 from config import app, db, api, socketio
@@ -434,6 +435,42 @@ class Chats(Resource):
         user_dict = [user.to_dict() for user in users]
         response = make_response(user_dict, 200)
         return response
+
+@app.route('/chat', methods=['GET', 'POST'])
+def chat():
+    if(request.method=='POST'):
+        username = request.form['username']
+        room = request.form['room']
+        #Store the data in session
+        session['username'] = username
+        session['room'] = room
+        return render_template('chat.html', session = session)
+    else:
+        if(session.get('username') is not None):
+            return render_template('chat.html', session = session)
+        else:
+            return redirect(url_for('index'))
+
+@socketio.on('connect')
+def connect():
+    id = request.args.get('id')
+    join_room(id)
+
+@socketio.on('send-message')
+def send_message(data):
+    recipients = data['recipients']
+    text = data['text']
+    sender_id = request.args.get('id')
+
+    for recipient in recipients:
+        new_recipients = [r for r in recipients if r != recipient]
+        new_recipients.append(sender_id)
+        emit('receive-message', {
+            'recipients': new_recipients,
+            'sender': sender_id,
+            'text': text
+        }, room=recipient)
+
 
 api.add_resource(Users, '/users', endpoint='users')
 api.add_resource(UserById, '/usersbyid', endpoint='usersbyid')

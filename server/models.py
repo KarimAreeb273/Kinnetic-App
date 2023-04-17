@@ -21,11 +21,9 @@ class User(db.Model, SerializerMixin):
     user_events = db.relationship("UserEvent", backref="user")
     follower = db.relationship('Follower', backref='user')
     followee = db.relationship('Followee', backref='user')
-    # Define the sender relationship
+
     sent_chats = db.relationship('Chat', foreign_keys='Chat.sender_id',
                                   backref='sender')
-
-    # Define the receiver relationship
     received_chats = db.relationship('Chat', foreign_keys='Chat.receiver_id',
                                       backref='receiver')
 

@@ -41,6 +41,7 @@ function Profile() {
       .then(prof => setFollowees(prof))
   }, []);
 
+
   return (
     <div style={{maxWidth:"1750px",margin:"0px auto"}}>
     <div>{profile.length > 0 ? (
@@ -75,9 +76,7 @@ function Profile() {
         </div>
     </div>
     
-     <div className="file-field input-field" style={{margin:"10px"}}>
-     <div className="file-path-wrapper">
-         <input className="file-path validate" type="text" />
+     <div style={{margin:"10px"}}>
          <Button style={{ float: 'right',  
          border: 'none',
          color: 'purple',
@@ -87,8 +86,7 @@ function Profile() {
          transition: 'all 0.3s ease 0s',
          cursor: 'pointer',
          outline: 'none',
-         margin: '10px'}} as={Link} to="/editprofile">Edit Profile</Button>
-     </div>
+         margin: '20px'}} as={Link} to="/editprofile">Edit Profile</Button>
      </div>
      </div> ) : (
       <Button className="results-list" style={{ display: 'block', margin: 'auto' }} as={Link} to={"/addprofile"}> Add a Profile </Button>

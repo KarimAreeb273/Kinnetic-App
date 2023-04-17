@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ChatModal from "../ChatModal";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -14,6 +15,7 @@ function ClickedProfile() {
   const [followers, setFollowers] = useState([]);
   const [followees, setFollowees] = useState([]);
   const [errors, setErrors] = useState([]);
+  const [open, setOpen] = useState(false)
   const history = useHistory();
   const { id } = useParams();
 
@@ -119,15 +121,13 @@ function ClickedProfile() {
         <div >
           <h2>Name: {profile.name}</h2>
           <h5>Bio: {profile.bio}</h5>
+          <h5><ChatModal open={open} setOpen={setOpen}/></h5>
         </div>
   
         </div>
     </div>
   
-     <div className="file-field input-field" style={{margin:"10px"}}>
-     <div className="file-path-wrapper">
-         <input className="file-path validate" type="text" />
-     </div>
+     <div style={{margin:"10px"}}>
      </div>
      </div>  
            <Wrapper className="results-list">

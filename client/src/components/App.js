@@ -7,9 +7,11 @@ import Profile from "./pages/Profile";
 import AddProfile from "./pages/AddProfile";
 import EditProfile from "./pages/EditProfile";
 import ClickedProfile from "./pages/ClickedProfile";
+import Chat from "./pages/Chat";
 import Events from "./pages/Events";
 import NewEvents from "./pages/NewEvents";
 import NavBar from "./NavBar";
+import SideBar from "./SideBar";
 import SearchBar from "./SearchBar";
 import { SearchResultsList } from "./SearchResultsList";
 import { Switch, Route } from "react-router-dom";
@@ -63,6 +65,8 @@ function App() {
       <NavBar setUser={setUser} user = {users} setResults={setResults} results={results}/>
       <SearchBar setResults={setResults} />
         {results && results.length > 0 && <SearchResultsList results={results} />}
+      {/* <Chat /> */}
+      {/* <SideBar /> */}
       <main >
         <Switch>
           <Route path="/new">
@@ -88,6 +92,9 @@ function App() {
           </Route>
           <Route path="/newevent">
             <NewEvents />
+          </Route>
+          <Route path="/sidebar">
+            <SideBar />
           </Route>
           <Route path="/">
             <Posts />
