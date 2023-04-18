@@ -182,6 +182,13 @@ class Contact(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone
+        }
+
     def __repr__(self):
         return f'<Contact {self.name}>'
 

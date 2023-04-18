@@ -1,42 +1,73 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io.connect('http://localhost:4000');
-
-function Chat() {
+function Chat({ user, currentUser, recipientUser }) {
   const [messages, setMessages] = useState([]);
-  const [text, setText] = useState('');
-  const inputRef = useRef(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    socket.on('message', message => {
-      setMessages(messages => [...messages, message]);
+    // Connect to the Socket.IO server
+    const newSocket = io('http://localhost:4000');
+    setSocket(newSocket);
+  
+    // Join the chat room with the current user and recipient user IDs
+    const chatRoomId = createChatRoomId(currentUser, recipientUser);
+    newSocket.emit('joinRoom', { roomId: chatRoomId });
+  
+    // Listen for new messages in the chat room
+    newSocket.on('newMessage', (message) => {
+      console.log('Received new message:', message);
+      setMessages(prevMessages => [...prevMessages, message]);
     });
-  }, []);
-
-  const sendMessage = e => {
-    e.preventDefault();
-    socket.emit('message', text);
-    setText('');
-    inputRef.current.focus();
+  
+    // Clean up the effect by disconnecting from the Socket.IO server
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [currentUser, recipientUser]);
+  
+  const createChatRoomId = (userId1, userId2) => {
+    const smallerUserId = userId1 < userId2 ? userId1 : userId2;
+    const largerUserId = userId1 < userId2 ? userId2 : userId1;
+    return `${smallerUserId}_${largerUserId}`;
   };
 
+  const handleNewMessage = (event) => {
+    setNewMessage(event.target.value);
+  };
+
+  console.log(newMessage, messages);
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() === '') return;
+    const chatRoomId = createChatRoomId(currentUser, recipientUser);
+    console.log(chatRoomId);
+    const newMsg = {
+      fromUser: currentUser,
+      toUser: recipientUser,
+      message: newMessage
+    };
+    socket.emit('sendMessage', {
+      roomId: chatRoomId,
+      ...newMsg
+    });
+    // setMessages([...messages, newMsg]);
+    setNewMessage('');
+  };
+  
   return (
     <div>
-      <div>
-        {messages.map((message, index) => (
-          <div key={index}>{message}</div>
+      <h2>Private Chat with {recipientUser}</h2>
+      <ul>
+        {messages.map((message) => (
+          <li key={message.id}>
+            {message.fromUser}: {message.message}
+          </li>
         ))}
-      </div>
-      <form onSubmit={sendMessage}>
-        <input
-          type="text"
-          value={text}
-          onChange={e => setText(e.target.value)}
-          ref={inputRef}
-        />
-        <button type="submit">Send</button>
-      </form>
+      </ul>
+      <input type="text" value={newMessage} onChange={handleNewMessage} />
+      <button onClick={handleSendMessage}>Send</button>
     </div>
   );
 }

@@ -431,11 +431,11 @@ class Followees(Resource):
 
 # class Chats(Resource):
 #     def get(self):
-#         chats = Chat.query.all()
-#         chat_list_dict = [chat.to_dict() for chat in chats]
+#         chats = Chat.query.filter(Chat.sender_id == session['user_id']).all()
+#         chat_list_dict = [chat.to_dict(rules=('-user',)) for chat in chats]
 #         response = make_response(chat_list_dict, 200)
 #         return response
-#     def post(self):
+# #     def post(self):
 #         if session.get('user_id'):
 #             data = request.get_json()
 #             try:
@@ -481,6 +481,7 @@ class Contacts(Resource):
 
         return [contact.to_dict() for contact in contacts], 200
 
+
     def post(self):
         if not session.get('user_id'):
             return {'error': '401 Unauthorized'}, 401
@@ -511,30 +512,61 @@ class Contacts(Resource):
 
 @socketio.on('message')
 def handle_message(message):
-    print('received message: ' + message)
-    send(message, broadcast=True)
+    emit('message', message, broadcast=True)
 
-@socketio.on('connect')
-def connect():
-    # Get user ID from Flask session
-    user_id = session['user_id']
-    join_room(user_id)
-
-@socketio.on('join-room')
-def join_room_event(room):
+@socketio.on('joinRoom')
+def on_join(data):
+    room = data['roomId']
     join_room(room)
 
-@socketio.on('leave-room')
-def leave_room_event(room):
+@socketio.on('leaveRoom')
+def on_leave(data):
+    room = data['roomId']
     leave_room(room)
 
-@socketio.on('send_message')
-def handle_send_message(data):
-    message = data['message']
-    receiver_id = data['receiver_id']
-    sender_id = session['user_id']
-    emit('receive_message', {'message': message, 'sender_id': sender_id}, room=receiver_id)
-    print(f"Message sent: '{message}' from {sender_id} to {receiver_id}")
+@socketio.on('sendMessage')
+def on_send_message(data):
+    room = data['roomId']
+    newMessage = {
+        'fromUser': data['fromUser'],
+        'toUser': data['toUser'],
+        'message': data['message'],
+    }
+    socketio.emit('newMessage', newMessage, room=room)
+
+# @socketio.on('connect')
+# def connect():
+#     # Get user ID from Flask session
+#     user_id = session['user_id']
+#     join_room(user_id)
+
+# @socketio.on('join')
+# def on_join(data):
+#     username = data['username']
+#     room = data['room']
+#     join_room(room)
+#     emit('join_room', f'{username} has entered the room.', room=room)
+
+# @socketio.on('leave')
+# def on_leave(data):
+#     username = data['username']
+#     room = data['room']
+#     leave_room(room)
+#     emit('leave_room', f'{username} has left the room.', room=room)
+
+# @socketio.on('send_message')
+# def on_send_message(data):
+#     message = data['message']
+#     recipient = data['recipient']
+#     sender = data['sender']
+#     room = f'{recipient}-{sender}'
+
+#     if recipient != sender:
+#         join_room(room)
+#         emit('receive_message', {'message': message, 'sender': sender}, room=room)
+#     else:
+#         emit('error_message', {'message': 'You cannot send a message to yourself.'}, room=request.sid)
+    # print(f"Message sent: '{message}' from {sender_id} to {receiver_id}")
 
 api.add_resource(Users, '/users', endpoint='users')
 api.add_resource(UserById, '/usersbyid', endpoint='usersbyid')

@@ -1,11 +1,15 @@
-import React from 'react';
+import { useContext } from "react";
 import { Modal, Button, Image, Header } from 'semantic-ui-react';
+import GlobalChat from "./pages/GlobalChat";
 import Chat from "./pages/Chat";
 import OpenConversation from "./OpenConversation";
+import { UserContext } from "../UserContext";
 import "./ChatModal.css";
-function ChatModal({ open, setOpen, id }) {
-      
+function ChatModal({ recusername, open, setOpen, id }) {
 
+    const [user, setUser] = useContext(UserContext);
+
+    const userId = user.id;
     return (
         <Modal className = "modal"
             onClose={() => setOpen(false)}
@@ -15,7 +19,7 @@ function ChatModal({ open, setOpen, id }) {
         >
             <Modal.Content>
                 <Modal.Description>
-                <Chat receiverId = {id}/>
+                <Chat user = {user} recipientUser = {id} currentUser = {userId} recusername = {recusername}/>
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions>

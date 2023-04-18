@@ -1,14 +1,61 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Modal, Button, Image, Header } from 'semantic-ui-react';
+import Contacts from "./Contacts";
+import "./FriendsTab.css";
 
 
 const FriendsTab = () => {
+  const [open, setOpen] = useState(false)
+  const [contacts, setContacts] = useState([])
 
+  useEffect(() => {
+    fetch("/contacts").then((r) => {
+      if (r.ok) {
+        r.json().then((users) => setContacts(users));
+      }
+    });
+  }, []);
+
+  console.log(contacts);
+
+  const name = contacts.map((cont) => cont.name);
+  const key = contacts.map((cont) => cont.id);
+
+  console.log(name);
 
   return (
-    <div style={{ color:"black" }}>
-    Hi
+    <>
+    <Modal className = "modal"
+        onClose={() => setOpen(false)}
+        onOpen={() => setOpen(true)}
+        open={open}
+        trigger={<Button className='highlight-btn' content='Add Friend'/>}
+    >
+        <Modal.Content>
+            <Modal.Description>
+              <Contacts />
+            </Modal.Description>
+        </Modal.Content>
+        <Modal.Actions>
+        <Button
+            content="Close Window"
+            labelPosition='right'
+            icon='close'
+            onClick={() => setOpen(false)}
+            positive
+        />
+        </Modal.Actions>
+    </Modal>
+    <div>
+      <h1 style={{ color:"black" }}>Friends Names:</h1>
+      <ul className="friends-list">
+          {contacts && contacts.map((contact) => (
+            <li style={{ color:"black" }} key={contact.id}>{contact.name}, </li>
+          ))}
+      </ul>
     </div>
-  );
+    </>
+);
 };
 
 export default FriendsTab;

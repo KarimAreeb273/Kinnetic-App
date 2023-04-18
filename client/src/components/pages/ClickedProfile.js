@@ -27,6 +27,8 @@ function ClickedProfile() {
       })
   }, []);
 
+  const recusername = profile.username
+
   useEffect(() => {
     fetch(`/posts/${id}`)
       .then((r) => r.json())
@@ -121,7 +123,7 @@ function ClickedProfile() {
         <div >
           <h2>Name: {profile.name}</h2>
           <h5>Bio: {profile.bio}</h5>
-          <h5><ChatModal id = {id} open={open} setOpen={setOpen}/></h5>
+          <h5><ChatModal recusername = {recusername} id = {id} open={open} setOpen={setOpen}/></h5>
         </div>
   
         </div>
