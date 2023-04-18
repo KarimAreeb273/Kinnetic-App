@@ -8,11 +8,15 @@ import AddProfile from "./pages/AddProfile";
 import EditProfile from "./pages/EditProfile";
 import ClickedProfile from "./pages/ClickedProfile";
 import Chat from "./pages/Chat";
+import Contacts from "./Contacts";
+import OpenConversation from "./OpenConversation";
 import Events from "./pages/Events";
 import NewEvents from "./pages/NewEvents";
 import NavBar from "./NavBar";
 import SideBar from "./SideBar";
 import SearchBar from "./SearchBar";
+import { ContactsContext } from '../ContactsProvider'
+import { ConversationsContext } from '../ConversationsProvider'
 import { SearchResultsList } from "./SearchResultsList";
 import { Switch, Route } from "react-router-dom";
 import { UserContext } from "../UserContext";
@@ -23,6 +27,11 @@ function App() {
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [user, setUser, event, setEvent] = useContext(UserContext);
+  const {contacts, createContact} = useContext(ContactsContext);
+  const { sendMessage, selectedConversation } = useContext(ConversationsContext);
+
+  console.log(selectedConversation)
+  console.log(user)
 
   useEffect(() => {
     fetch("/usersbyid").then((r) => {
@@ -56,17 +65,16 @@ function App() {
     setProfile(updatedPosts);
 }
 
+console.log(contacts)
 
   if (!user) return <Login onLogin={setUser} />;
 
 
   return (
-    <div class="wav">
+    <div>
       <NavBar setUser={setUser} user = {users} setResults={setResults} results={results}/>
       <SearchBar setResults={setResults} />
         {results && results.length > 0 && <SearchResultsList results={results} />}
-      {/* <Chat /> */}
-      {/* <SideBar /> */}
       <main >
         <Switch>
           <Route path="/new">

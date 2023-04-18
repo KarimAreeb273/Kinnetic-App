@@ -24,6 +24,7 @@ function NavBar({results, setResults}) {
     });
   }
 
+  console.log(user)
 
   return (
     <nav>
@@ -34,7 +35,6 @@ function NavBar({results, setResults}) {
         <li style={{color:"black"}}> 
             Welcome, {user.username}!
         </li>
-        {/* <li><SearchModal open={open} setOpen={setOpen} results = {results} setResults = {setResults} /></li> */}
         <li ><Link to="/" style={{color:"black"}}>Home</Link></li>
         <li ><Link to="/new" style={{color:"black"}}>Create Post</Link></li>
         <li ><Link to="/events" style={{color:"black"}}>Events</Link></li>

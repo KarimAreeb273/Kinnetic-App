@@ -1,8 +1,10 @@
 import React from 'react';
 import { Modal, Button, Image, Header } from 'semantic-ui-react';
 import Chat from "./pages/Chat";
+import OpenConversation from "./OpenConversation";
 import "./ChatModal.css";
-function ChatModal({ open, setOpen }) {
+function ChatModal({ open, setOpen, id }) {
+      
 
     return (
         <Modal className = "modal"
@@ -13,7 +15,7 @@ function ChatModal({ open, setOpen }) {
         >
             <Modal.Content>
                 <Modal.Description>
-                    <Chat />
+                <Chat receiverId = {id}/>
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions>

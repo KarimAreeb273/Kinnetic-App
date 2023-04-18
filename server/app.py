@@ -10,7 +10,7 @@ from flask_socketio import emit, join_room, leave_room
 
 # Local imports
 from config import app, db, api, socketio
-from models import User, Post, Profile, Event, Comment, UserEvent, Follower, Followee, Chat
+from models import User, Post, Profile, Event, Comment, UserEvent, Follower, Followee, Contact
 
 # Views go here!
 
@@ -429,48 +429,106 @@ class Followees(Resource):
                 return {'error': '422 Unprocessable Entity'}, 422
         return {'error': '401 Unauthorized'}, 401
 
-class Chats(Resource):
-    def get(self):
-        users = Chat.query.all()
-        user_dict = [user.to_dict() for user in users]
-        response = make_response(user_dict, 200)
-        return response
+# class Chats(Resource):
+#     def get(self):
+#         chats = Chat.query.all()
+#         chat_list_dict = [chat.to_dict() for chat in chats]
+#         response = make_response(chat_list_dict, 200)
+#         return response
+#     def post(self):
+#         if session.get('user_id'):
+#             data = request.get_json()
+#             try:
+#                 new_chat = Chat(
+#                     message = data['message'],
+#                     receiver_id = data['receiver_id'],
+#                     sender_id = session['user_id']
+#                 )
 
-@app.route('/chat', methods=['GET', 'POST'])
-def chat():
-    if(request.method=='POST'):
-        username = request.form['username']
-        room = request.form['room']
-        #Store the data in session
-        session['username'] = username
-        session['room'] = room
-        return render_template('chat.html', session = session)
-    else:
-        if(session.get('username') is not None):
-            return render_template('chat.html', session = session)
-        else:
-            return redirect(url_for('index'))
+#                 db.session.add(new_chat)
+#                 db.session.commit()
+
+#                 new_chat_dict = new_chat.to_dict()
+#                 response = make_response(new_chat_dict, 201)
+#                 return response
+#             except IntegrityError:
+#                 return {'error': '422 Unprocessable Entity'}, 422
+#         return {'error': '401 Unauthorized'}, 401
+
+# class ChatsFiltered(Resource):
+#     def get(self, user1_id, user2_id):
+#         chats = Chat.query.filter((Chat.sender_id == user1_id) | (Chat.sender_id == user2_id)) \
+#                           .filter((Chat.receiver_id == user1_id) | (Chat.receiver_id == user2_id)) \
+#                           .order_by(Chat.created_at.asc()) \
+#                           .all()
+
+#         chat_list_dict = [chat.to_dict() for chat in chats]
+#         response = make_response(chat_list_dict, 200)
+#         return response
+
+
+class Contacts(Resource):
+    def get(self):
+        if not session.get('user_id'):
+            return {'error': '401 Unauthorized'}, 401
+
+        user = User.query.filter_by(id=session['user_id']).first()
+
+        if not user:
+            return {'error': '404 User not found'}, 404
+
+        contacts = Contact.query.filter_by(user_id=user.id).all()
+
+        return [contact.to_dict() for contact in contacts], 200
+
+    def post(self):
+        if not session.get('user_id'):
+            return {'error': '401 Unauthorized'}, 401
+
+        user = User.query.filter_by(id=session['user_id']).first()
+
+        if not user:
+            return {'error': '404 User not found'}, 404
+
+        data = request.get_json()
+
+        name = data['name']
+        email = data['email']
+        phone = data['phone']
+
+        if not name or not email:
+            return {'error': '400 Name and email are required'}, 400
+
+        contact = Contact(name=name, email=email, phone=phone, user_id=user.id)
+
+        try:
+            db.session.add(contact)
+            db.session.commit()
+            return contact.to_dict, 201
+        except:
+            db.session.rollback()
+            return {'error': '500 Internal Server Error'}, 500
 
 @socketio.on('connect')
 def connect():
-    id = request.args.get('id')
-    join_room(id)
+    user_id = session['user_id'] 
+    join_room(user_id)
 
-@socketio.on('send-message')
-def send_message(data):
-    recipients = data['recipients']
-    text = data['text']
-    sender_id = request.args.get('id')
+@socketio.on('join-room')
+def join_room_event(room):
+    join_room(room)
 
-    for recipient in recipients:
-        new_recipients = [r for r in recipients if r != recipient]
-        new_recipients.append(sender_id)
-        emit('receive-message', {
-            'recipients': new_recipients,
-            'sender': sender_id,
-            'text': text
-        }, room=recipient)
+@socketio.on('leave-room')
+def leave_room_event(room):
+    leave_room(room)
 
+@socketio.on('send_message')
+def handle_send_message(data):
+    message = data['message']
+    receiver_id = data['receiver_id']
+    sender_id = session['user_id']
+    emit('receive_message', {'message': message, 'sender_id': sender_id}, room=receiver_id)
+    print(f"Message sent: '{message}' from {sender_id} to {receiver_id}")
 
 api.add_resource(Users, '/users', endpoint='users')
 api.add_resource(UserById, '/usersbyid', endpoint='usersbyid')
@@ -490,8 +548,10 @@ api.add_resource(UserEvents, '/userevents', endpoint='userevents')
 api.add_resource(UserEventById, '/userevent/<int:id>', endpoint='userevents/<int:id>')
 api.add_resource(Followers, '/followers/<int:id>', endpoint='followers/<int:id>')
 api.add_resource(Followees, '/followees/<int:id>', endpoint='followees/<int:id>')
-api.add_resource(Chats, '/chats', endpoint='chats')
+# api.add_resource(ChatsFiltered, '/chats/<int:user1_id>/<int:user2_id>', endpoint='chats/<int:user1_id>/<int:user2_id>')
+# api.add_resource(Chats, '/chats', endpoint='chats')
+api.add_resource(Contacts, '/contacts', endpoint='contacts')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
-    socketio.run(app)
+

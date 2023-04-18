@@ -7,7 +7,8 @@ from config import db, bcrypt
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-posts.user','-profiles.user','-_password_hash','-user_events.user',"-comments.user",)
+    serialize_rules = ('-posts.user','-profiles.user','-_password_hash','-user_events.user',"-comments.user","-profile.user",)
+
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -21,11 +22,12 @@ class User(db.Model, SerializerMixin):
     user_events = db.relationship("UserEvent", backref="user")
     follower = db.relationship('Follower', backref='user')
     followee = db.relationship('Followee', backref='user')
+    contacts = db.relationship('Contact', backref='user')
 
-    sent_chats = db.relationship('Chat', foreign_keys='Chat.sender_id',
-                                  backref='sender')
-    received_chats = db.relationship('Chat', foreign_keys='Chat.receiver_id',
-                                      backref='receiver')
+    # sent_chats = db.relationship('Chat', foreign_keys='Chat.sender_id',
+    #                               backref='sender')
+    # received_chats = db.relationship('Chat', foreign_keys='Chat.receiver_id',
+    #                                   backref='receiver')
 
     @hybrid_property
     def password_hash(self):
@@ -152,20 +154,35 @@ class Followee(db.Model):
     def __repr__(self):
         return f'<Followee {self.id}: {self.following_id}>'
 
-class Chat(db.Model, SerializerMixin):
-    __tablename__ = 'chats'
+# class Chat(db.Model, SerializerMixin):
+#     __tablename__ = 'chats'
+
+#     serialize_rules = ('-user',)
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     message = db.Column(db.String, nullable=False)
+#     created_at = db.Column(db.DateTime, server_default=db.func.now())
+#     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
+
+#     sender_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+#     receiver_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+
+#     def __repr__(self):
+#         return f'<Chat {self.id}: {self.message}>'
+
+class Contact(db.Model):
+    __tablename__ = 'contacts'
 
     serialize_rules = ('-user',)
 
     id = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.String, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, onupdate=db.func.now())
+    name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=True)
 
-    sender_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
-    receiver_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):
-        return f'<Chat {self.id}: {self.message}>'
+        return f'<Contact {self.name}>'
 
 

@@ -4,6 +4,8 @@ import App from "./components/App";
 import { BrowserRouter } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import { UserProvider } from "./UserContext";
+import { ContactsProvider } from './ContactsProvider'
+import { ConversationsProvider } from './ConversationsProvider'
 import "semantic-ui-css/semantic.min.css";
 
 const GlobalStyle = createGlobalStyle`
@@ -25,9 +27,13 @@ const GlobalStyle = createGlobalStyle`
 ReactDOM.render(
   <BrowserRouter>
     <GlobalStyle />
+    <ContactsProvider>
     <UserProvider>
+    <ConversationsProvider>
     <App />
+    </ConversationsProvider>
     </UserProvider>
+    </ContactsProvider>
   </BrowserRouter>,
   document.getElementById("root")
 );

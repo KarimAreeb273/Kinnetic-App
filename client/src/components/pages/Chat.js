@@ -1,42 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-function Chat ({ open, setOpen }) {
+const Chat = ({ receiverId }) => {
   const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-  const socket = io.connect('http://localhost:4000');
-
+  const [message, setMessage] = useState('');
+  const [socket, setSocket] = useState(null);
+  
   useEffect(() => {
-    socket.on('chat message', (data) => {
-      setMessages([...messages, data]);
+    const newSocket = io.connect('http://localhost:4000');
+    newSocket.on('connect', () => {
+      newSocket.emit('join-room', receiverId);
     });
-  }, [messages]);
-
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    socket.emit('chat message', inputValue);
-    setInputValue('');
-  };
+    newSocket.on('receive_message', ({ message, sender_id }) => {
+      setMessages(prevMessages => [...prevMessages, { message, sender_id }]);
+    });
+    setSocket(newSocket);
+  }, [receiverId]);
+  
+  function handleSendMessage () {
+    socket.emit('send_message', { message, receiver_id: receiverId });
+    setMessages(prevMessages => [...prevMessages, { message, sender_id: 'me' }]);
+    setMessage('');
+  }
+  
 
   return (
     <div>
-      <ul>
-        {messages.map((message, index) => (
-          <li key={index}>{message}</li>
+      <div>
+        {messages.map((msg, index) => (
+          <div key={index}>{msg.sender_id}: {msg.message}</div>
         ))}
-      </ul>
-      <form onSubmit={handleFormSubmit}>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-        />
-        <button type="submit">Send</button>
-      </form>
+      </div>
+      <input type="text" value={message} onChange={e => setMessage(e.target.value)} />
+      <button onClick={handleSendMessage}>Send</button>
     </div>
   );
 };
