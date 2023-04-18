@@ -6,7 +6,7 @@
 from flask import request, session, make_response, jsonify, render_template, redirect, url_for
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
-from flask_socketio import emit, join_room, leave_room
+from flask_socketio import emit, join_room, leave_room, send
 
 # Local imports
 from config import app, db, api, socketio
@@ -509,9 +509,15 @@ class Contacts(Resource):
             db.session.rollback()
             return {'error': '500 Internal Server Error'}, 500
 
+@socketio.on('message')
+def handle_message(message):
+    print('received message: ' + message)
+    send(message, broadcast=True)
+
 @socketio.on('connect')
 def connect():
-    user_id = session['user_id'] 
+    # Get user ID from Flask session
+    user_id = session['user_id']
     join_room(user_id)
 
 @socketio.on('join-room')

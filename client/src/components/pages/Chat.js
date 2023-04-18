@@ -1,40 +1,44 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-const Chat = ({ receiverId }) => {
+const socket = io.connect('http://localhost:4000');
+
+function Chat() {
   const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
-  const [socket, setSocket] = useState(null);
-  
+  const [text, setText] = useState('');
+  const inputRef = useRef(null);
+
   useEffect(() => {
-    const newSocket = io.connect('http://localhost:4000');
-    newSocket.on('connect', () => {
-      newSocket.emit('join-room', receiverId);
+    socket.on('message', message => {
+      setMessages(messages => [...messages, message]);
     });
-    newSocket.on('receive_message', ({ message, sender_id }) => {
-      setMessages(prevMessages => [...prevMessages, { message, sender_id }]);
-    });
-    setSocket(newSocket);
-  }, [receiverId]);
-  
-  function handleSendMessage () {
-    socket.emit('send_message', { message, receiver_id: receiverId });
-    setMessages(prevMessages => [...prevMessages, { message, sender_id: 'me' }]);
-    setMessage('');
-  }
-  
+  }, []);
+
+  const sendMessage = e => {
+    e.preventDefault();
+    socket.emit('message', text);
+    setText('');
+    inputRef.current.focus();
+  };
 
   return (
     <div>
       <div>
-        {messages.map((msg, index) => (
-          <div key={index}>{msg.sender_id}: {msg.message}</div>
+        {messages.map((message, index) => (
+          <div key={index}>{message}</div>
         ))}
       </div>
-      <input type="text" value={message} onChange={e => setMessage(e.target.value)} />
-      <button onClick={handleSendMessage}>Send</button>
+      <form onSubmit={sendMessage}>
+        <input
+          type="text"
+          value={text}
+          onChange={e => setText(e.target.value)}
+          ref={inputRef}
+        />
+        <button type="submit">Send</button>
+      </form>
     </div>
   );
-};
+}
 
 export default Chat;
