@@ -5,13 +5,13 @@ from random import randint, choice as rc
 from faker import Faker
 
 from app import app
-from models import db, User, Follower, Followee, UserEvent, User
+from models import db, User, Follower, Followee, UserEvent, User, Contact
 
 fake = Faker()
 
 with app.app_context():
 
-    db.session.query(Follower).delete()
+    db.session.query(Contact).delete()
     db.session.commit()
     print("Deleting all records...")
 

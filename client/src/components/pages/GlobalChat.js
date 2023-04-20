@@ -25,7 +25,7 @@ function GlobalChat() {
       <div>
         <div>
           {messages.map((message, index) => (
-            <div key={index}>{user.username}: {message}</div>
+            <div key={index}>{message}</div>
           ))}
         </div>
         <form onSubmit={handleSendMessage}>

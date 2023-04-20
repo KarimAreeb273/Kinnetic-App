@@ -32,14 +32,9 @@ function NavBar({results, setResults}) {
     <div className="nav-wrapper grey">
         <Link to="/" className="brand-logo left" >      
         <h1 className="titles">
-        <span class="letter">K</span>
-        <span class="letter">I</span>
-        <span class="letter">N</span>
-        <span class="letter">N</span>
-        <span class="letter">E</span>
-        <span class="letter">T</span>
-        <span class="letter">I</span>
-        <span class="letter">C</span>
+        <span class="letter">KINNETIC   </span>
+        <span class="letters">STAY CONNECTED, </span>
+        <span class="letters">STAY KINNETIC</span>
       </h1>
       </Link> 
         <div>

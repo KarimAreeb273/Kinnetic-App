@@ -75,6 +75,7 @@ function Profile() {
         </div>
         <div >
           <h2>Name: {name}</h2>
+          <h5>User ID: {user.id}</h5>
           <h5>Bio: {bio}</h5>
           <div style={{margin:"-15px"}}>
          <Button style={{ float: 'left',  

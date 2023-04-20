@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useState } from 'react';
 export const ContactsContext = createContext();
 
 export const ContactsProvider = ({ children }) => {
-  const [contacts, setContacts] = useState([{ name: 'Bob', email: 'bob@example.com', phone: '555-555-5555' }])
+  const [contacts, setContacts] = useState([])
 
   useEffect(() => {
     fetch('/contacts')

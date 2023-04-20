@@ -14,11 +14,19 @@
 .titles {
     font-size: 45px;
     font-family: 'Montserrat';
-    font-weight: 900;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 10px;
     margin-top: 50px;
     color: #000000;
-    text-shadow: 2px 2px 0px #007bff;
   }
+
+.letter {
+    text-shadow: 2px 2px 0px #007bff;
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+.letters {
+    font-size: 17px;
+}

@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from "react-router";
 import "./PostPage.css";
 import { useParams } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
+import { UserContext } from "../../UserContext";
 import "./EventPage.css";
 
-function EventPage({user}) {
+function EventPage() {
     const { id } = useParams();
     const [posts, setPosts] = useState([]);
     const [event, setEvent] = useState([]);
     const [events, setEvents] = useState([]);
+    const [userevent, setUserEvent] = useState([]);
     const [userevents, setUserEvents] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState([]);
     const [isGoing, setIsGoing] = useState(false);
+    const [user, setUser] = useContext(UserContext);
     const history = useHistory();
 
     useEffect(() => {
@@ -30,24 +33,46 @@ function EventPage({user}) {
           })
       }, []);
   
-    useEffect(() => {
-      fetch(`/userevent/${id}`)
-        .then((r) => r.json())
-        .then((data) => {
-          console.log(data[0])
-          setEvent(data)
-    })
-  }, []);
+  //   useEffect(() => {
+  //     fetch(`/userevent/${id}`)
+  //       .then((r) => r.json())
+  //       .then((data) => {
+  //         console.log(data[0])
+  //         setEvent(data)
+  //   })
+  // }, []);
 
-  useEffect(() => {
-    fetch(`/userevents/${id}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setUserEvents(data)
-  })
+//   useEffect(() => {
+//     fetch(`/userevents/${id}`)
+//       .then((r) => r.json())
+//       .then((data) => {
+//         setUserEvents(data)
+//   })
+// }, []);
+
+console.log(user.id)
+
+useEffect(() => {
+  fetch(`/events/${id}` + `/users/${user.id}`)
+    .then(response => response.json())
+    .then(data => {
+      setUserEvents(data.result);
+    })
+    .catch(error => {
+      console.error('Error fetching user event:', error);
+      setErrors(true);
+    });
 }, []);
 
-console.log([userevents])
+console.log(userevent)
+
+useEffect(() => {
+  fetch(`/userevents/${id}`)
+    .then((r) => r.json())
+    .then((data) => {
+      setUserEvent(data)
+})
+}, []);
   
     function handleSubmit(id){
       setIsLoading(true);
@@ -73,7 +98,7 @@ console.log([userevents])
   
     function handleDelete(id) {
         setIsLoading(true);
-        fetch(`/userevent/${user.id}`, {
+        fetch(`/userevent/${id}`, {
           method: "DELETE",
         })
         .then((r) => {
@@ -86,15 +111,15 @@ console.log([userevents])
         }});
       }
 
-      console.log(event, isGoing)
+      console.log(event, isGoing, user.id, event?.event_id)
 
       useEffect(() => {
-        if (event?.is_going == null) {
+        if (userevents === false) {
           setIsGoing(false);
-        } else if (event?.is_going == true){
+        } else if ( userevents === true) {
           setIsGoing(true);
         }
-      }, [event]);
+      }, [event, userevents, user.id]);
 
       if (posts) {
         return (
@@ -123,7 +148,8 @@ console.log([userevents])
             <div style={{ borderBottom: '1px solid black' }}/>
             <br/>
             <div className = "attendees-list">
-            {userevents.length > 0 ? (userevents.map((event) => (<div key = {event.id}><h3>Who is going?</h3> <h5>1. {event.user.username}</h5></div>))) :
+              <h2>Current Attendees</h2>
+            {userevent.length > 0 ? (userevent.map((event) => (<div key = {event.id}> <h5>{event.user.username}</h5></div>))) :
             <h3>No Current Reserved Attendees</h3>}  
             </div>      
           </div> 

@@ -21,6 +21,7 @@ function Login({ onLogin }) {
         <span class="letter">C</span>
       </h1>
       <h5 className="subtitle">Stay Connected!</h5>
+      <h5 className="subtitle">Stay Kinnetic!</h5>
       {showLogin ? (
         <>
           <LoginForm onLogin={onLogin} />

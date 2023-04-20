@@ -15,6 +15,7 @@ function ClickedProfile() {
   const [isLoading, setIsLoading] = useState(false);
   const [followers, setFollowers] = useState([]);
   const [followed, setFollowed] = useState([]);
+  const [follow, setFollow] = useState([]);
   const [following, setFollowing] = useState(false);
   const [errors, setErrors] = useState([]);
   const [open, setOpen] = useState(false)
@@ -50,6 +51,18 @@ function ClickedProfile() {
       .then(prof => setFollowed(prof))
   }, []);
 
+  useEffect(() => {
+    fetch(`/follower/${user.id}` + `/profile/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        setFollow(data.result);
+      })
+      .catch(error => {
+        console.error('Error fetching user event:', error);
+        setErrors(true);
+      });
+  }, []);
+
   function handleSubmit(){
     setIsLoading(true);
     fetch(`/followers/${id}`, {
@@ -64,11 +77,9 @@ function ClickedProfile() {
       }),
     })
     .then((r) => {
-      setIsLoading(false);
       if (r.ok) {
         setFollowing(true);
         // localStorage.setItem(`following:${profile.id}`, "true");
-        history.push(`/profile/${profile.id}`);
       } else {
         r.json().then((err) => setErrors(err.errors));
       }
@@ -84,7 +95,6 @@ function ClickedProfile() {
       },
     })
       .then((r) => {
-        setIsLoading(false);
         if (r.ok) {
           setFollowing(false);
           // localStorage.setItem(`following:${profile.id}`, "false");
@@ -94,18 +104,18 @@ function ClickedProfile() {
       });
   }
 
-  console.log(followed)
+  console.log(follow)
   useEffect(() => {
     // const followingState = localStorage.getItem(`following:${profile.id}`);
-    if (followed.length > 0 && followed.is_following !== null) {
-      setFollowing(true);
-    } else {
+    if (follow === false) {
+      setFollowing(false);
+    } else if ( follow === true){
       setFollowing(
-        false
+        true,
         // followed.length > 0 && followed.some((follower) => follower.id === user.id)
       );
     }
-  }, [followers, followed, user.id, profile.id]);
+  }, [follow, followers, followed]);
   
   return (
     <div style={{maxWidth:"1750px",margin:"0px auto"}}>
@@ -133,7 +143,7 @@ function ClickedProfile() {
                 <h6>{followed.length > 0 ? followed.length : "0"} followers</h6>
                 <h6>{followers.length > 0 ? followers.length : "0"} following</h6>
             </div>
-            { !following ? (
+            { !follow ? (
             <button onClick={handleSubmit} 
                     style={{
                        margin:"10px"
@@ -153,6 +163,7 @@ function ClickedProfile() {
         </div>
         <div >
           <h2>Name: {profile.name}</h2>
+          <h5>User ID: {profile.id}</h5>
           <h5>Bio: {profile.bio}</h5>
           <h5><ChatModal profile = {profile} recusername = {recusername} id = {id} open={open} setOpen={setOpen}/></h5>
         </div>

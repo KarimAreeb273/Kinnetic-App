@@ -384,6 +384,17 @@ class UserEvents(Resource):
                 return {'error': '422 Unprocessable Entity'}, 422
         return {'error': '401 Unauthorized'}, 401
 
+class UserEventByIDS(Resource):
+    def get(self, event_id, user_id):
+
+        if session.get('user_id'):
+            user_event = UserEvent.query.filter_by(event_id=event_id, user_id=user_id).first()
+            if user_event is None:
+                return jsonify({'result': False})
+            else:
+                return jsonify({'result': True})
+        
+        return {'error': '401 Unauthorized'}, 401
 class UserEventById(Resource):
     def get(self, id):
 
@@ -457,6 +468,17 @@ class Followed(Resource):
         follower_dict = [follower.to_dict() for follower in followers]
         response = make_response(follower_dict, 200)
         return response   
+class FollowerByIDS(Resource):
+    def get(self, follower_id, profile_id):
+
+        if session.get('user_id'):
+            followers = Follower.query.filter_by(follower_id=follower_id, profile_id=profile_id).first()
+            if followers is None:
+                return jsonify({'result': False})
+            else:
+                return jsonify({'result': True})
+        
+        return {'error': '401 Unauthorized'}, 401
 class Followees(Resource):
     def get(self, id):
         followees = Followee.query.filter_by(following_id=id).all()
@@ -638,10 +660,12 @@ api.add_resource(AllProfiles, '/allprofiles', endpoint='allprofiles')
 api.add_resource(Events, '/events', endpoint='events')
 api.add_resource(EventsById, '/events/<int:id>', endpoint='events/<int:id>')
 api.add_resource(UserEvents, '/userevents', endpoint='userevents')
+api.add_resource(UserEventByIDS, '/events/<int:event_id>/users/<int:user_id>', endpoint='events/<int:event_id>/users/<int:user_id>')
 api.add_resource(UserEventById, '/userevent/<int:id>', endpoint='userevent/<int:id>')
 api.add_resource(UserEventsInID, '/userevents/<int:id>', endpoint='userevents/<int:id>')
 api.add_resource(Followers, '/followers/<int:id>', endpoint='followers/<int:id>')
 api.add_resource(Followed, '/followed/<int:id>', endpoint='followed/<int:id>')
+api.add_resource(FollowerByIDS, '/follower/<int:follower_id>/profile/<int:profile_id>', endpoint='follower/<int:follower_id>/profile/<int:profile_id>')
 api.add_resource(Followees, '/followees/<int:id>', endpoint='followees/<int:id>')
 # api.add_resource(ChatsFiltered, '/chats/<int:user1_id>/<int:user2_id>', endpoint='chats/<int:user1_id>/<int:user2_id>')
 # api.add_resource(Chats, '/chats', endpoint='chats')

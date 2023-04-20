@@ -44,11 +44,12 @@ const FriendsTab = () => {
     </Modal>
     <div>
       <h1 style={{ color:"black" }}>Friends Names:</h1>
+      {contacts.length > 0 ? (
       <ul className="friends-list">
           {contacts && contacts.map((contact) => (
             <li style={{ color:"black" }} key={contact.id}>{contact.name}, </li>
           ))}
-      </ul>
+      </ul> ) : ( <h4 style={{ color:"black" }}>No Friends...</h4>)}
     </div>
     </>
 );
