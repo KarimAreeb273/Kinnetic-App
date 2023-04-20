@@ -1,0 +1,19 @@
+body {
+    background: linear-gradient(to bottom right, white, white, white, grey, black);
+    background-size: cover;
+    background-repeat: no-repeat;
+    animation: earthGradient 15s ease infinite;
+  }
+  
+  @keyframes earthGradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  

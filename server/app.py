@@ -119,7 +119,6 @@ class Posts(Resource):
         post_dict = [post.to_dict() for post in posts]
         response = make_response(post_dict, 200)
         return response
-
         
     def post(self):
 
@@ -185,6 +184,15 @@ class PostsById(Resource):
         except Exception as e:
             return make_response({ "error": "Invalid input" }, 400)
 
+class PostsByOthers(Resource):
+    def get(self, id):
+        posts = Post.query.filter(Post.user_id == id).all()
+        if not posts: 
+            return make_response({"error": "Post not found"}, 404)
+        post_dict = [post.to_dict() for post in posts]
+        response = make_response(post_dict, 200)
+        return response
+
 class PostsByUser(Resource):
     def get(self):
 
@@ -197,13 +205,13 @@ class PostsByUser(Resource):
         return {'error': '401 Unauthorized'}, 401
 
 class Comments(Resource):
-    def get(self):
-        comments = Comment.query.filter(Comment.post_id == Post.id).all()
+    def get(self, id):
+        comments = Comment.query.filter(Comment.post_id == id).all()
         comments_dict = [comment.to_dict() for comment in comments]
         response = make_response(comments_dict, 200)
         return response
     
-    def post(self):
+    def post(self, id):
         print(request.get_json())
         new_comment = Comment(
             text = request.get_json()['text'],
@@ -337,6 +345,14 @@ class Events(Resource):
                 return {'error': '422 Unprocessable Entity'}, 422
 
         return {'error': '401 Unauthorized'}, 401
+class EventsById(Resource):
+    def get(self, id):
+        posts = Event.query.filter(Event.id == id).first()
+        if not posts: 
+            return make_response({"error": "Post not found"}, 404)
+        posts_dict = posts.to_dict()
+        response = make_response(posts_dict, 200)
+        return response
 
 class UserEvents(Resource):
     def get(self):
@@ -369,6 +385,16 @@ class UserEvents(Resource):
         return {'error': '401 Unauthorized'}, 401
 
 class UserEventById(Resource):
+    def get(self, id):
+
+        if session.get('user_id'):
+
+            user = UserEvent.query.filter(UserEvent.id == id).first()
+            user_dict = user.to_dict()
+            response = make_response(user_dict, 200)
+            return response
+        
+        return {'error': '401 Unauthorized'}, 401
     def delete(self, id):
         print(id)
         rem_events = UserEvent.query.filter(UserEvent.user_id == id).first()
@@ -379,19 +405,28 @@ class UserEventById(Resource):
         response = make_response({}, 200)
         return response
 
+class UserEventsInID(Resource):
+    def get(self, id):
+
+            user = UserEvent.query.filter(UserEvent.event_id == id).all()
+            user_dict = [userevents.to_dict() for userevents in user]
+            response = make_response(user_dict, 200)
+            return response
+        
 class Followers(Resource):
     def get(self, id):
         followers = Follower.query.filter_by(follower_id=id).all()
-        if not followers: 
-            return make_response({"error": "Follower not found"}, 404)
         follower_dict = [follower.to_dict() for follower in followers]
         response = make_response(follower_dict, 200)
         return response
     def post(self, id):
         if session.get('user_id'):
+            new = request.get_json()
             try:
                 new_follower = Follower(
-                    follower_id = session['user_id']
+                    follower_id = session['user_id'],
+                    profile_id = new['profile_id'],
+                    is_following = new['is_following'],
                 )
 
                 db.session.add(new_follower)
@@ -403,7 +438,25 @@ class Followers(Resource):
             except IntegrityError:
                 return {'error': '422 Unprocessable Entity'}, 422
         return {'error': '401 Unauthorized'}, 401
-    
+    def delete(self, id):
+        if session.get('user_id'):
+            follower = Follower.query.filter_by(
+                follower_id=session['user_id'],
+                profile_id=id
+            ).first()
+            if not follower:
+                return make_response({"error": "Follower not found"}, 404)
+            db.session.delete(follower)
+            db.session.commit()
+            return make_response({"message": "Unfollowed successfully"}, 200)
+        return {'error': '401 Unauthorized'}, 401
+
+class Followed(Resource):
+    def get(self, id):
+        followers = Follower.query.filter_by(profile_id=id).all()
+        follower_dict = [follower.to_dict() for follower in followers]
+        response = make_response(follower_dict, 200)
+        return response   
 class Followees(Resource):
     def get(self, id):
         followees = Followee.query.filter_by(following_id=id).all()
@@ -576,15 +629,19 @@ api.add_resource(Login, '/login', endpoint='login')
 api.add_resource(Logout, '/logout', endpoint='logout')
 api.add_resource(Posts, '/posts', endpoint='posts')
 api.add_resource(PostsById, '/posts/<int:id>', endpoint='posts/<int:id>')
+api.add_resource(PostsByOthers, '/postsbyothers/<int:id>', endpoint='postsbyothers/<int:id>')
 api.add_resource(PostsByUser, '/postsbyuser', endpoint='postsbyuser')
-api.add_resource(Comments, '/comments', endpoint='comments')
+api.add_resource(Comments, '/comments/<int:id>', endpoint='comments/<int:id>')
 api.add_resource(Profiles, '/profiles', endpoint='profiles')
 api.add_resource(ProfileById, '/profiles/<int:id>', endpoint='profiles/<int:id>')
 api.add_resource(AllProfiles, '/allprofiles', endpoint='allprofiles')
 api.add_resource(Events, '/events', endpoint='events')
+api.add_resource(EventsById, '/events/<int:id>', endpoint='events/<int:id>')
 api.add_resource(UserEvents, '/userevents', endpoint='userevents')
-api.add_resource(UserEventById, '/userevent/<int:id>', endpoint='userevents/<int:id>')
+api.add_resource(UserEventById, '/userevent/<int:id>', endpoint='userevent/<int:id>')
+api.add_resource(UserEventsInID, '/userevents/<int:id>', endpoint='userevents/<int:id>')
 api.add_resource(Followers, '/followers/<int:id>', endpoint='followers/<int:id>')
+api.add_resource(Followed, '/followed/<int:id>', endpoint='followed/<int:id>')
 api.add_resource(Followees, '/followees/<int:id>', endpoint='followees/<int:id>')
 # api.add_resource(ChatsFiltered, '/chats/<int:user1_id>/<int:user2_id>', endpoint='chats/<int:user1_id>/<int:user2_id>')
 # api.add_resource(Chats, '/chats', endpoint='chats')

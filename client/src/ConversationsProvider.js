@@ -123,8 +123,6 @@ export function ConversationsProvider({ id, children }) {
     createConversation
   }
 
-  console.log(conversations)
-
   return (
     <ConversationsContext.Provider value={value}>
       {children}

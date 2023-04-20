@@ -5,6 +5,9 @@ import { Modal } from "semantic-ui-react";
 import SearchModal from "./SearchModal";
 import { UserContext } from "../UserContext";
 import SideBar from "./SideBar";
+import SearchBar from "./SearchBar";
+import { SearchResultsList } from "./SearchResultsList";
+import "./NavBar.css" 
 
 function NavBar({results, setResults}) {
   const [user, setUser] = useContext(UserContext);
@@ -24,12 +27,21 @@ function NavBar({results, setResults}) {
     });
   }
 
-  console.log(user)
-
   return (
-    <nav>
-    <div className="nav-wrapper white">
-        <Link to="/" className="brand-logo left" style={{color:"black", fontFamily: "Arial"}}>Kinnetic</Link> 
+    <nav className="nav">
+    <div className="nav-wrapper grey">
+        <Link to="/" className="brand-logo left" >      
+        <h1 className="titles">
+        <span class="letter">K</span>
+        <span class="letter">I</span>
+        <span class="letter">N</span>
+        <span class="letter">N</span>
+        <span class="letter">E</span>
+        <span class="letter">T</span>
+        <span class="letter">I</span>
+        <span class="letter">C</span>
+      </h1>
+      </Link> 
         <div>
       <ul id="nav-mobile" className="right hide-on-med-and-down">
         <li style={{color:"black"}}> 
@@ -51,6 +63,8 @@ function NavBar({results, setResults}) {
       </ul>
       </div>
     </div>
+    {/* <SearchBar setResults={setResults} />
+        {results && results.length > 0 && <SearchResultsList results={results} />} */}
     <SideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
     </nav>
   );
@@ -91,10 +105,15 @@ const LogoMini = styled.h2`
 
 
 const Nav = styled.nav`
+  background-color: #fff;
   display: flex;
-  gap: 4px;
-  position: absolute;
-  right: 8px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 `;
-
 export default NavBar;

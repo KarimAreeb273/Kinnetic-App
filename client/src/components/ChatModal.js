@@ -5,7 +5,7 @@ import Chat from "./pages/Chat";
 import OpenConversation from "./OpenConversation";
 import { UserContext } from "../UserContext";
 import "./ChatModal.css";
-function ChatModal({ recusername, open, setOpen, id }) {
+function ChatModal({ profile, recusername, open, setOpen, id }) {
 
     const [user, setUser] = useContext(UserContext);
 
@@ -19,7 +19,7 @@ function ChatModal({ recusername, open, setOpen, id }) {
         >
             <Modal.Content>
                 <Modal.Description>
-                <Chat user = {user} recipientUser = {id} currentUser = {userId} recusername = {recusername}/>
+                <Chat profile = {profile} user = {user} recipientUser = {id} currentUser = {userId} recusername = {recusername}/>
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions>

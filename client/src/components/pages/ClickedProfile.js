@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import ChatModal from "../ChatModal";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { Box } from "../styles";
 import { Button } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
+import { UserContext } from "../../UserContext";
 import "../SearchResultsList.css";
 
 function ClickedProfile() {
@@ -13,9 +14,11 @@ function ClickedProfile() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [followers, setFollowers] = useState([]);
-  const [followees, setFollowees] = useState([]);
+  const [followed, setFollowed] = useState([]);
+  const [following, setFollowing] = useState(false);
   const [errors, setErrors] = useState([]);
   const [open, setOpen] = useState(false)
+  const [user, setUser] = useContext(UserContext);
   const history = useHistory();
   const { id } = useParams();
 
@@ -30,7 +33,7 @@ function ClickedProfile() {
   const recusername = profile.username
 
   useEffect(() => {
-    fetch(`/posts/${id}`)
+    fetch(`/postsbyothers/${id}`)
       .then((r) => r.json())
       .then(prof => setPosts(prof))
   }, []);
@@ -42,9 +45,9 @@ function ClickedProfile() {
   }, []);
 
   useEffect(() => {
-    fetch(`/followees/${id}`)
+    fetch(`/followed/${id}`)
       .then((r) => r.json())
-      .then(prof => setFollowees(prof))
+      .then(prof => setFollowed(prof))
   }, []);
 
   function handleSubmit(){
@@ -55,32 +58,16 @@ function ClickedProfile() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        followers_id: profile.id
+        follower_id: user.id,
+        profile_id: profile.id,
+        is_following: true
       }),
     })
     .then((r) => {
       setIsLoading(false);
       if (r.ok) {
-        history.push(`/profile/${profile.id}`);
-      } else {
-        r.json().then((err) => setErrors(err.errors));
-      }
-    });
-  } 
-  function handleFollowing(){
-    setIsLoading(true);
-    fetch(`/followees/${id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        following_id: profile.id
-      }),
-    })
-    .then((r) => {
-      setIsLoading(false);
-      if (r.ok) {
+        setFollowing(true);
+        // localStorage.setItem(`following:${profile.id}`, "true");
         history.push(`/profile/${profile.id}`);
       } else {
         r.json().then((err) => setErrors(err.errors));
@@ -88,8 +75,41 @@ function ClickedProfile() {
     });
   } 
 
+  function handleUnfollow() {
+    setIsLoading(true);
+    fetch(`/followers/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((r) => {
+        setIsLoading(false);
+        if (r.ok) {
+          setFollowing(false);
+          // localStorage.setItem(`following:${profile.id}`, "false");
+        } else {
+          r.json().then((err) => setErrors(err.errors));
+        }
+      });
+  }
+
+  console.log(followed)
+  useEffect(() => {
+    // const followingState = localStorage.getItem(`following:${profile.id}`);
+    if (followed.length > 0 && followed.is_following !== null) {
+      setFollowing(true);
+    } else {
+      setFollowing(
+        false
+        // followed.length > 0 && followed.some((follower) => follower.id === user.id)
+      );
+    }
+  }, [followers, followed, user.id, profile.id]);
+  
   return (
     <div style={{maxWidth:"1750px",margin:"0px auto"}}>
+      <br/>
     <div style={{
        margin:"18px 0px",
         borderBottom:"1px solid grey"
@@ -102,17 +122,18 @@ function ClickedProfile() {
        
     }}>
         <div>
-            <img style={{width:"250px",height:"200px",borderRadius:"100px"}}
+            <img style={{width:"250px",height:"200px",borderRadius:"50%"}}
             src={profile.image_url}
             />
           
         </div>
         <div>
             <div style={{display:"flex",justifyContent:"space-between",width:"108%"}}>
-                <h6>{posts.length} posts</h6>
-                <h6>{followers.length} followers</h6>
-                <h6>{followees.length} following</h6>
+                <h6>{posts.length > 0 ? posts.length : "0"} posts</h6>
+                <h6>{followed.length > 0 ? followed.length : "0"} followers</h6>
+                <h6>{followers.length > 0 ? followers.length : "0"} following</h6>
             </div>
+            { !following ? (
             <button onClick={handleSubmit} 
                     style={{
                        margin:"10px"
@@ -120,39 +141,48 @@ function ClickedProfile() {
                     >
                         Follow
             </button>
+            ) : (
+              <button onClick={handleUnfollow}
+              style={{
+                margin:"10px"
+            }} className="btn waves-effect waves-light #64b5f6 pink darken-1">
+              Unfollow
+            </button>
+            ) }
+  
+        </div>
         <div >
           <h2>Name: {profile.name}</h2>
           <h5>Bio: {profile.bio}</h5>
-          <h5><ChatModal recusername = {recusername} id = {id} open={open} setOpen={setOpen}/></h5>
-        </div>
-  
+          <h5><ChatModal profile = {profile} recusername = {recusername} id = {id} open={open} setOpen={setOpen}/></h5>
         </div>
     </div>
   
      <div style={{margin:"10px"}}>
      </div>
      </div>  
-           <Wrapper className="results-list">
+     <Wrapper >
            {posts.length > 0 ? (
-           posts.map((post) => (
-             <Post key={post.id}>
-               <Box>
-                 <h2>{post.title}</h2>
-                 {/* <img src={post.image} /> */}
-               </Box>
-               <Button as={Link} to={`/posts/${post.id}`}>
-               See Post
-             </Button>
-             </Post>
-           ))
-         ) : (
-           <>
-             <h2>No Posts in your feed</h2>
-             <Button as={Link} to="/new">
-               Make a New Post
-             </Button>
-           </>
-         )}
+        <PostList>
+          {posts.reverse().map((post) => (
+            <PostCard key={post.id}>
+              <h2>{post.title}</h2>
+              <PostImage src={post.image} alt={post.title} />
+              <h5>By: {post.user.username}</h5>
+              <Button as={Link} to={`/posts/${post.id}`}>
+                See Post
+              </Button>
+            </PostCard>
+          ))}
+        </PostList>
+      ) : (
+        <EmptyState>
+          <h2>No Posts in your feed</h2>
+          <Button as={Link} to="/new">
+            Make a New Post
+          </Button>
+        </EmptyState>
+      )}
          </Wrapper>
          </div>
   
@@ -160,20 +190,57 @@ function ClickedProfile() {
 
 }
 
-const Wrapper = styled.section`
-  max-width: 800px;
-  margin: 40px auto;
+const Wrapper = styled.div`
+  background-color: #f5f5f5;
+  padding: 40px 0;
+  height: 1000px;
 `;
 
-const Post = styled.article`
-  margin-bottom: 24px;
+const PostList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
-const Boxchild = styled.div`
-  border-radius: 2px;
-  box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%),
-    0 0 0 1px rgb(10 10 10 / 2%);
-  padding: 16px;
+const PostCard = styled(Box)`
+  margin: 20px;
+  padding: 20px;
+  width: calc(33.33% - 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+  }
+
+  h5 {
+    margin-top: 20px;
+    font-size: 16px;
+  }
+`;
+
+const PostImage = styled.img`
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center;
+  }
 `;
 
 export default ClickedProfile;

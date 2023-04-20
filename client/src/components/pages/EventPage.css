@@ -1,0 +1,41 @@
+.card {
+    background-color: #ef9f0c;
+    border-radius: 20px;
+    box-shadow: 0px 4px 8px rgba(187, 21, 21, 0.1);
+    margin: 30px auto;
+    max-width: 700px;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .card h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .card p {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
+  
+  .card button {
+    background-color: #393531;
+    color: #fff;
+    font-size: 1.2rem;
+    margin-top: 10px;
+  }
+  
+  .card button:hover {
+    background-color: #3b085d;
+  }
+  
+  .loading {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .attendees-list {
+    font-family: Arial, cursive;
+    font-size: 28px;
+  }
+  

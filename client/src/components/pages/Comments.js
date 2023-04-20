@@ -1,6 +1,7 @@
 
 import React, {useEffect, useState} from 'react';
 import { Comment, Header, Form, Button } from 'semantic-ui-react';
+import "./Comments.css";
 
 function Comments({ comments, text, handleChanges, handleComment }) {
 
@@ -9,7 +10,8 @@ function Comments({ comments, text, handleChanges, handleComment }) {
             <>
             <Comment key={comment.id}>
                 <Comment.Content>
-                    <Comment.Text>{comment.text}</Comment.Text>
+                {comment.created_at}
+                    <Comment.Text>User ID {comment.user_id}: {comment.text}</Comment.Text>
                 </Comment.Content>
             </Comment>
             </>
@@ -22,8 +24,9 @@ function Comments({ comments, text, handleChanges, handleComment }) {
             <Header as="h3" dividing>
                 Comments
             </Header>
+            <div className = "comm">
             {commentsList}
-            <br />
+            </div>
             <Form onSubmit={handleComment}>
                 {/* <Form.Field>
                     <label>Name: </label>

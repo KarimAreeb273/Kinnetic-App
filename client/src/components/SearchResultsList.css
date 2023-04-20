@@ -1,11 +1,33 @@
 .results-list {
-
-    background-color: white;
     display: flex;
     flex-direction: column;
     box-shadow: 0px 0px 8px #ddd;
     border-radius: 20px;
     margin-top: 1rem;
-    max-height: 900px;
+    max-height: 800px;
     overflow-y: auto;
   }
+
+body {
+    background: linear-gradient(to bottom right, #4f8a8b, #f6bd60);
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+.card {
+  background: linear-gradient(to bottom right, #4f8a8b, #f6bd60);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.container img {
+  width: 250px;
+  height: 200px;
+  border-radius: 100px;
+}
+  

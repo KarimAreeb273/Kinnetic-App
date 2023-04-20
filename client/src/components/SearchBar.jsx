@@ -31,6 +31,10 @@ const SearchBar = ({ setResults }) => {
     fetchData(value);
   };
 
+  useEffect(() => {
+    setInput("");
+  }, [setResults]);
+
   return (
     <div className="input-wrapper">
       <input

@@ -75,7 +75,7 @@ class Post(db.Model, SerializerMixin):
 class Comment(db.Model, SerializerMixin):
     __tablename__ = 'comments'
 
-    serialize_rules = ('-post', "-user", "-profile")
+    serialize_rules = ('-post', "-user",)
 
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String, nullable=False)
@@ -99,6 +99,7 @@ class Profile(db.Model, SerializerMixin):
     bio = db.Column(db.String, nullable=False)
 
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    followers = db.relationship("Follower", backref="profile")
 
     def __repr__(self):
         return f'<Post {self.id}: {self.bio}>'
@@ -132,21 +133,28 @@ class UserEvent(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
     event_id = db.Column(db.Integer(), db.ForeignKey('events.id'))
 
-class Follower(db.Model):
+    # def to_dict(self):
+    #     return {
+    #         'is_going': self.is_going
+    #     }
+
+class Follower(db.Model, SerializerMixin):
     __tablename__ = 'followers'
 
-    serialize_rules = ('-user.followers',)
+    serialize_rules = ('-user','-profile',)
 
     id = db.Column(db.Integer, primary_key=True)
+    is_following = db.Column(db.Boolean, default=False)
     follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    profile_id = db.Column(db.Integer(), db.ForeignKey('profile.id'))
 
     def __repr__(self):
         return f'<Follower {self.id}: {self.follower_id}>'
 
-class Followee(db.Model):
+class Followee(db.Model, SerializerMixin):
     __tablename__ = 'followee'
 
-    serialize_rules = ('-user.followees',)
+    serialize_rules = ('-user',)
 
     id = db.Column(db.Integer, primary_key=True)
     following_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -170,7 +178,7 @@ class Followee(db.Model):
 #     def __repr__(self):
 #         return f'<Chat {self.id}: {self.message}>'
 
-class Contact(db.Model):
+class Contact(db.Model, SerializerMixin):
     __tablename__ = 'contacts'
 
     serialize_rules = ('-user',)

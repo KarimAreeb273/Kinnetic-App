@@ -1,166 +1,92 @@
-#root {
-    min-width: 1000px;
-    overflow: auto;
+
+  .post-page {
+    max-width: 800px;
+    margin: 50px auto;
   }
   
-  ul {
-    list-style: none;
-    padding: 0;
+  .post-page h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
   }
   
-  .nav-header, .fighter-container, .fighter-page {
-    min-width: 1000px;
-  }
-  
-  .nav-header {
-    height: 200px;
-    border-bottom: 12px red ridge;
-    overflow: hidden;
-  }
-  
-  .nav-header img {
-    margin: 50px 0 0 0;
-    max-height: 100px;
-  }
-  
-  .nav-btn {
-    max-height: 100px;
-    width: max-content;
-  }
-  
-  #root > div > div.nav-header > a:nth-child(4) {
-    width: 100px;
-  }
-  
-  .search-sort {
-    text-align: center;
-  }
-  
-  .fighter-btn {
-    width: 100%;
-  }
-  
-  #form-title {
+  .post-page .card-image {
     margin-top: 20px;
-  }
-  
-  .buttonContainer {
-    text-align: center;
-    padding: 1rem;
-  }
-  
-  .fighter-card {
     text-align: center;
   }
   
-  #card-title {
-    border-bottom: 2px rgba(0, 0, 0, 0.5) ridge;
-    padding: 0 5px;
+  .post-page .card-image img {
+    max-width: 100%;
+    max-height: 400px;
   }
   
-  #root > div > section > div.fighter-title > a {
-    width: max-content;
+  .post-page .card-image img:hover {
+    cursor: pointer;
   }
   
-  .fighter-title {
-    text-align: left;
-    display: inline-grid;
-    width: max-content;
-    margin: 50px 25px 0 0;
+  .post-page .comments-section {
+    margin-top: 40px;
   }
   
-  .fighter-title img {
-    width: 350px;
+  .post-page .comments-section h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
   }
   
-  .fighter-details {
-    text-align: left;
-    display: inline-grid;
-    width: 50%;
-  }
-  
-  #root > div > div.ui.comments > h3 {
-    height: max-content;
-  }
-  
-  .page-number-container {
-    margin: 25px 0;
-    text-align: center;
-  }
-  
-  #comment-btn, body > div.ui.page.modals.dimmer.transition.visible.active > div > div.actions > button {
-    background-color: red !important;
-    border: 2px white solid !important;
-  }
-  
-  #comment-btn:hover, body > div.ui.page.modals.dimmer.transition.visible.active > div > div.actions > button:hover {
-    background-color: white !important;
-    border: 2px red solid !important;
-    color: red !important;
-  }
-  
-  .highlight-btn, .poll-btn {
-    width: max-content;
-  }
-  
-  #socials {
-    margin-right: 15%;
-    margin-left: 3%;
-    padding-bottom: 50px;
-  }
-  
-  #like-btn {
-    margin-right: 84.857%;
-  }
-  
-  .poll {
-    width: 1127px;
-    text-align: center;
-  }
-  .option {
+  .post-page .comment-form {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
   }
   
-  .option > button {
-    min-width: 75px;
-  }
-  
-  #bar {
-    background-color: rgb(255, 0, 0);
-    border: 2px rgba(255, 0, 0, 0.5) solid;
+  .post-page .comment-form textarea {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
     border-radius: 5px;
-    max-width: 1127px;
-    transition: width .5s;
   }
   
-  .fighter-poll {
-    width: 1127px;
-    text-align: center;
+  .post-page .comment-form button {
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #3f51b5;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
   }
-  .fighter-option {
+  
+  .post-page .comment {
     display: flex;
-  }
-  
-  .fighter-option > button {
-    min-width: 75px;
-  }
-  
-  #fighter-bar {
-    background-color: rgb(255, 0, 0);
-    border: 2px rgba(255, 0, 0, 0.5) solid;
+    flex-direction: column;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    max-width: 73.5%;
-    transition: width .5s;
   }
   
-  #root > div > form > button {
-    color: white;
-    background-color: red !important;
-    border: 2px white solid !important;
+  .post-page .comment .user-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
   }
   
-  #root > div > form > button:hover {
-    background-color: white !important;
-    border: 2px red solid !important;
-    color: red !important;
+  .post-page .comment .user-info h4 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 10px;
   }
+  
+  .post-page .comment .comment-text {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+
+  

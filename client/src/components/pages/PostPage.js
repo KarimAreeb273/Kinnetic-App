@@ -42,17 +42,18 @@ function PostPage({user, post, setPost}) {
         })
     }, []);
 
+
     console.log(posts)
 
     useEffect(() => {
-        fetch(`/comments`)
+        fetch(`/comments/${id}`)
           .then((r) => r.json())
           .then(pos => {
               setComm(pos)
           })
       }, []);
 
-    console.log(comm)
+    console.log(comm, comments, posts, id)
 
     if (posts) {
         
@@ -86,7 +87,7 @@ function PostPage({user, post, setPost}) {
 
         function handleComment(e) {
             e.preventDefault();
-            fetch(`/comments`, {
+            fetch(`/comments/${id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -98,37 +99,45 @@ function PostPage({user, post, setPost}) {
                 .then(r => r.json())
                 .then(comment => {
                     console.log(comment.text)
-                    setComments([comment, ...comments]);
+                    setComments([comment.text, ...comments]);
                     setInput(initialInput)
                 });
         }
 
+        console.log(input)
+
         return (
             <div className="card input-filed"
             style={{
-                margin:"30px auto",
+                margin:"100px auto",
+                maxHeight:"800px",
                 maxWidth:"700px",
                 padding:"20px",
-                textAlign:"center"
+                textAlign:"center",
+                background: "#b2b2b2",
+                border: "2px solid"
             }}
             >
                 <div>
-                    <div >
-                        <h2>{posts.title}</h2>
-                        <div>
-                            <Icon id='like-btn' name='thumbs up outline' size='large' color='red' link onClick={handleLikes}>{likes}</Icon>
-                            <Link to={`/posts/${id}/edit`}>
-                                <Icon id='edit-btn' name='edit' size='large' color='red' link />
-                            </Link>
-                        </div>
+                    <div>
+                        <h2 style={{
+                            color: "black",
+                            font: 'Montserrat',
+            }}>{posts.title}</h2>
                         <div className="card-image">
-                            <img src={posts.image}/>
+                            <img style={{
+                                margin:"10px auto",
+                                maxHeight:"300px",
+                                maxWidth:"300px",
+                                padding:"20px",
+                                textAlign:"center"
+                                }}
+                                src={posts.image}/>
                         </div>
                         <h2>{posts.description}</h2>
                     </div>
                 </div>
                 <Comments comments={comm} text={input.text} handleChanges={handleChanges} handleComment={handleComment} />
-                <br />
             </div>
         );
     } else {
@@ -139,3 +148,4 @@ function PostPage({user, post, setPost}) {
 }
 
 export default PostPage;
+

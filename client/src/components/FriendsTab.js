@@ -16,12 +16,8 @@ const FriendsTab = () => {
     });
   }, []);
 
-  console.log(contacts);
-
   const name = contacts.map((cont) => cont.name);
   const key = contacts.map((cont) => cont.id);
-
-  console.log(name);
 
   return (
     <>

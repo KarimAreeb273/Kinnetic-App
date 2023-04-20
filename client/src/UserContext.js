@@ -29,8 +29,6 @@ export const UserProvider = ({ children }) => {
       .then(prof => setProfile(prof))
   }, []);
 
-  console.log(profile, id)
-
   return (
     <UserContext.Provider value={[user, setUser, event, setEvent, profile, setProfile]}>
       {children}

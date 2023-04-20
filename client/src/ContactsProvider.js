@@ -9,7 +9,6 @@ export const ContactsProvider = ({ children }) => {
     fetch('/contacts')
       .then(response => response.json())
       .then(data => {
-        console.log('contacts fetched:', data) // <-- add this line
         setContacts(data)
       })
       .catch(error => console.error(error));
@@ -27,9 +26,6 @@ export const ContactsProvider = ({ children }) => {
     .catch(error => console.error(error))
   }
 
-//   const value = { contacts, createContact };
-
-  console.log('contacts provider:', contacts) 
 
   return (
     <ContactsContext.Provider value={{ contacts, createContact }}>

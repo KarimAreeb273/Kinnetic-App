@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import LoginForm from "../LoginForm";
 import SignUpForm from "../SignUpForm";
+import "./Login.css";
 import { Button } from "semantic-ui-react";
 
 function Login({ onLogin }) {
@@ -9,7 +10,17 @@ function Login({ onLogin }) {
 
   return (
     <Wrapper>
-      <Logo>Kinnetic</Logo>
+      <h1 className="title">
+        <span class="letter">K</span>
+        <span class="letter">I</span>
+        <span class="letter">N</span>
+        <span class="letter">N</span>
+        <span class="letter">E</span>
+        <span class="letter">T</span>
+        <span class="letter">I</span>
+        <span class="letter">C</span>
+      </h1>
+      <h5 className="subtitle">Stay Connected!</h5>
       {showLogin ? (
         <>
           <LoginForm onLogin={onLogin} />
@@ -38,10 +49,14 @@ function Login({ onLogin }) {
 }
 
 const Logo = styled.h1`
-  font-family: "Permanent Marker", cursive;
-  font-size: 3rem;
-  color: deeppink;
-  margin: 8px 0 16px;
+  font-size: 48px;
+  font-weight: bold;
+  color: #007bff;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 50px;
+
 `;
 
 const Wrapper = styled.section`

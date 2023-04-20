@@ -7,6 +7,7 @@ import { UserProvider } from "./UserContext";
 import { ContactsProvider } from './ContactsProvider'
 import { ConversationsProvider } from './ConversationsProvider'
 import "semantic-ui-css/semantic.min.css";
+import "./index.css";
 
 const GlobalStyle = createGlobalStyle`
   *,

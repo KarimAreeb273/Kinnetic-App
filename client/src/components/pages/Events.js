@@ -3,8 +3,9 @@ import { useHistory } from "react-router";
 import { useParams, Link } from 'react-router-dom';
 import styled from "styled-components";
 import { Box } from "../styles";
-import { Button } from "semantic-ui-react";
+import { Button, Card } from "semantic-ui-react";
 import "../SearchResultsList.css";
+import "./Events.css";
 
 function Events({ user }) {
   const [posts, setPosts] = useState([]);
@@ -26,11 +27,10 @@ function Events({ user }) {
       .then((r) => r.json())
       .then((data) => {
         setEvent(data)
-        setIsGoing(data[0].is_going);
   })
 }, []);
 
-  function handleSubmit(){
+  function handleSubmit(id){
     setIsLoading(true);
     fetch("/userevents", {
       method: "POST",
@@ -40,7 +40,7 @@ function Events({ user }) {
       body: JSON.stringify({
         user_id: user.id,
         is_going: true,
-        event_id: posts[0].id
+        event_id: id
       }),
     })
     .then((r) => {
@@ -51,6 +51,8 @@ function Events({ user }) {
       }
     });
   } 
+
+  console.log(posts)
 
   function handleDelete(id) {
       setIsLoading(true);
@@ -67,20 +69,26 @@ function Events({ user }) {
     }
 
   return (
-    <Wrapper className="results-list" >
-      {posts.length > 0 ? ( 
+    <Wrapper className="result-list">
+      <Button as={Link} to="/newevent">
+        Start a new event
+      </Button>
+      {posts.length > 0 ? (
         posts.map((post) => (
-          <Post key={post.id}>
-            <Box>
-              <h2>{post.name}</h2>
-              <Button onClick={!isGoing ? handleSubmit : handleDelete}>
-                {isGoing ? "Cancel" : "Going"}
-              </Button>
-            </Box>
-            <Button as={Link} to={`/events/${post.id}`}>
-            See Events
-          </Button>
-          </Post>
+          <Card key={post.id}>
+            <Card.Content>
+              <Card.Header>{post.name}</Card.Header>
+              <Card.Meta>{post.location}</Card.Meta>
+              <Card.Description>{post.description}</Card.Description>
+            </Card.Content>
+            <Card.Content extra>
+              <div className="ui two buttons">
+                <Button basic color="green" as={Link} to={`/events/${post.id}`}>
+                  See Event
+                </Button>
+              </div>
+            </Card.Content>
+          </Card>
         ))
       ) : (
         <>
@@ -94,13 +102,20 @@ function Events({ user }) {
   );
 }
 
-const Wrapper = styled.section`
-  max-width: 800px;
-  margin: 40px auto;
+const Wrapper = styled.div`
+  background-color: #f5f5f5;
+  padding: 40px 0;
 `;
 
 const Post = styled.article`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #F9F8F8;
+  padding: 24px;
   margin-bottom: 24px;
+  border-radius: 20px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
 `;
 
 export default Events;

@@ -65,6 +65,7 @@ function EditProfile({ onUpdateProfile }) {
             <Form.Field>
               <Label htmlFor="image">Profile Picture</Label>
               <Input
+                name="image_url"
                 type="text"
                 id="image"
                 value={image_url}
@@ -74,6 +75,7 @@ function EditProfile({ onUpdateProfile }) {
             <Form.Field>
               <Label htmlFor="name">Name</Label>
               <Input
+                name="name"
                 type="text"
                 id="name"
                 value={name}
@@ -83,6 +85,7 @@ function EditProfile({ onUpdateProfile }) {
             <Form.Field>
               <Label htmlFor="bio">Bio</Label>
               <Input
+                name="bio"
                 type="text"
                 id="bio"
                 value={bio}
